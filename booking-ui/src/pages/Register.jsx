@@ -1,126 +1,415 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../services/api";
+import "./Register.css";
 
 function Register() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [password2, setPassword2] = useState("");
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [password2, setPassword2] = useState("");
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    setError("");
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (password !== password2) {
-      setError("Passwords do not match.");
-      return;
-    }
+        setError("");
 
-    setLoading(true);
+        if (password !== password2) {
+            setError("Passwords do not match.");
+            return;
+        }
 
-    try {
-      await registerUser({
-        username,
-        email,
-        password,
-        password2,
-      });
+        setLoading(true);
 
-      alert("Registration successful. Please login.");
+        try {
+            await registerUser({
+                username,
+                email,
+                password,
+                password2,
+            });
 
-      navigate("/login");
-    } catch (error) {
-      console.error("Registration error:", error);
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+            navigate("/login", {
+                state: {
+                    successMessage:
+                        "Registration successful. Please login to continue.",
+                },
+            });
 
-  return (
-    <div className="container py-5">
-      <div className="card shadow-sm mx-auto p-4" style={{ maxWidth: "450px" }}>
-        <h2 className="text-center mb-4">Create Account</h2>
+        } catch (error) {
+            console.error("Registration error:", error);
 
-        {error && <div className="alert alert-danger">{error}</div>}
+            setError(
+                error.message ||
+                "Unable to create your account."
+            );
 
-        <form onSubmit={handleSubmit}>
-          {/* Username */}
+        } finally {
+            setLoading(false);
+        }
+    };
 
-          <div className="mb-3">
-            <label className="form-label">Username</label>
+    return (
+        <div className="auth-page">
 
-            <input
-              type="text"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+            {/* Left Side */}
+            <div className="auth-visual">
 
-          {/* Email */}
+                <div className="auth-visual-overlay"></div>
 
-          <div className="mb-3">
-            <label className="form-label">Email</label>
+                <div className="auth-visual-content">
 
-            <input
-              type="email"
-              className="form-control"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+                    <Link to="/" className="auth-logo">
 
-          {/* Password */}
+                        <span className="auth-logo-icon">
+                            <i className="bi bi-buildings"></i>
+                        </span>
 
-          <div className="mb-3">
-            <label className="form-label">Password</label>
+                        <span>
+                            Booking<span>X</span>
+                        </span>
 
-            <input
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+                    </Link>
 
-          {/* Confirm Password */}
 
-          <div className="mb-3">
-            <label className="form-label">Confirm Password</label>
+                    <div className="auth-visual-text">
 
-            <input
-              type="password"
-              className="form-control"
-              value={password2}
-              onChange={(e) => setPassword2(e.target.value)}
-              required
-            />
-          </div>
+                        <span className="auth-eyebrow">
+                            <i className="bi bi-globe2"></i>
+                            YOUR JOURNEY BEGINS HERE
+                        </span>
 
-          {/* Register button */}
+                        <h1>
+                            Find your
+                            <br />
+                            perfect <span>stay.</span>
+                        </h1>
 
-          <button
-            type="submit"
-            className="btn btn-primary w-100"
-            disabled={loading}
-          >
-            {loading ? "Creating account..." : "Register"}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+                        <p>
+                            Create your BookingX account and make
+                            hotel reservations simple, fast, and
+                            stress-free.
+                        </p>
+
+                    </div>
+
+
+                    <div className="auth-trust">
+
+                        <div className="auth-trust-item">
+                            <i className="bi bi-search"></i>
+                            <span>Find great stays</span>
+                        </div>
+
+                        <div className="auth-trust-item">
+                            <i className="bi bi-calendar-check"></i>
+                            <span>Manage bookings</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            {/* Right Side */}
+            <div className="auth-form-section">
+
+                <div className="auth-form-container">
+
+                    {/* Mobile Logo */}
+                    <div className="auth-mobile-logo">
+
+                        <Link to="/" className="auth-logo">
+
+                            <span className="auth-logo-icon">
+                                <i className="bi bi-buildings"></i>
+                            </span>
+
+                            <span>
+                                Booking<span>X</span>
+                            </span>
+
+                        </Link>
+
+                    </div>
+
+
+                    {/* Heading */}
+                    <div className="auth-heading">
+
+                        <span className="auth-label">
+                            GET STARTED
+                        </span>
+
+                        <h2>
+                            Create your account
+                        </h2>
+
+                        <p>
+                            Join BookingX and start planning your next stay.
+                        </p>
+
+                    </div>
+
+
+                    {/* Error */}
+                    {error && (
+                        <div className="auth-message auth-error">
+
+                            <i className="bi bi-exclamation-circle-fill"></i>
+
+                            <span>
+                                {error}
+                            </span>
+
+                        </div>
+                    )}
+
+
+                    {/* Form */}
+                    <form
+                        className="auth-form"
+                        onSubmit={handleSubmit}
+                    >
+
+                        {/* Username */}
+                        <div className="auth-field">
+
+                            <label htmlFor="register-username">
+                                Username
+                            </label>
+
+                            <div className="auth-input-wrapper">
+
+                                <i className="bi bi-person"></i>
+
+                                <input
+                                    id="register-username"
+                                    type="text"
+                                    placeholder="Choose a username"
+                                    value={username}
+                                    onChange={(e) =>
+                                        setUsername(e.target.value)
+                                    }
+                                    autoComplete="username"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Email */}
+                        <div className="auth-field">
+
+                            <label htmlFor="register-email">
+                                Email address
+                            </label>
+
+                            <div className="auth-input-wrapper">
+
+                                <i className="bi bi-envelope"></i>
+
+                                <input
+                                    id="register-email"
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={email}
+                                    onChange={(e) =>
+                                        setEmail(e.target.value)
+                                    }
+                                    autoComplete="email"
+                                    required
+                                />
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Password */}
+                        <div className="auth-field">
+
+                            <label htmlFor="register-password">
+                                Password
+                            </label>
+
+                            <div className="auth-input-wrapper">
+
+                                <i className="bi bi-lock"></i>
+
+                                <input
+                                    id="register-password"
+                                    type={
+                                        showPassword
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    placeholder="Create a password"
+                                    value={password}
+                                    onChange={(e) =>
+                                        setPassword(e.target.value)
+                                    }
+                                    autoComplete="new-password"
+                                    required
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() =>
+                                        setShowPassword(
+                                            !showPassword
+                                        )
+                                    }
+                                    aria-label={
+                                        showPassword
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                >
+
+                                    <i
+                                        className={
+                                            showPassword
+                                                ? "bi bi-eye-slash"
+                                                : "bi bi-eye"
+                                        }
+                                    ></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Confirm Password */}
+                        <div className="auth-field">
+
+                            <label htmlFor="register-password2">
+                                Confirm password
+                            </label>
+
+                            <div className="auth-input-wrapper">
+
+                                <i className="bi bi-shield-lock"></i>
+
+                                <input
+                                    id="register-password2"
+                                    type={
+                                        showPassword2
+                                            ? "text"
+                                            : "password"
+                                    }
+                                    placeholder="Confirm your password"
+                                    value={password2}
+                                    onChange={(e) =>
+                                        setPassword2(e.target.value)
+                                    }
+                                    autoComplete="new-password"
+                                    required
+                                />
+
+                                <button
+                                    type="button"
+                                    className="password-toggle"
+                                    onClick={() =>
+                                        setShowPassword2(
+                                            !showPassword2
+                                        )
+                                    }
+                                    aria-label={
+                                        showPassword2
+                                            ? "Hide password"
+                                            : "Show password"
+                                    }
+                                >
+
+                                    <i
+                                        className={
+                                            showPassword2
+                                                ? "bi bi-eye-slash"
+                                                : "bi bi-eye"
+                                        }
+                                    ></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Submit */}
+                        <button
+                            type="submit"
+                            className="auth-submit-btn"
+                            disabled={loading}
+                        >
+
+                            {loading ? (
+                                <>
+                                    <span className="auth-spinner"></span>
+
+                                    Creating account...
+                                </>
+                            ) : (
+                                <>
+                                    Create Account
+
+                                    <i className="bi bi-arrow-right"></i>
+                                </>
+                            )}
+
+                        </button>
+
+                    </form>
+
+
+                    {/* Login */}
+                    <div className="auth-switch">
+
+                        <span>
+                            Already have an account?
+                        </span>
+
+                        <Link to="/login">
+                            Sign in
+                            <i className="bi bi-arrow-up-right"></i>
+                        </Link>
+
+                    </div>
+
+
+                    {/* Back Home */}
+                    <Link
+                        to="/"
+                        className="auth-back-home"
+                    >
+                        <i className="bi bi-arrow-left"></i>
+
+                        Back to BookingX
+
+                    </Link>
+
+                </div>
+
+            </div>
+
+        </div>
+    );
 }
 
 export default Register;

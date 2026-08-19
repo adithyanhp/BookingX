@@ -22,6 +22,7 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
+
     gap: 30px;
     margin-bottom: 45px;
 }
@@ -34,6 +35,7 @@
     margin-bottom: 10px;
 
     color: #0d6efd;
+
     font-size: 12px;
     font-weight: 800;
     letter-spacing: 1.5px;
@@ -53,6 +55,7 @@
     margin: 0;
 
     color: #6c757d;
+
     font-size: 15px;
     line-height: 1.7;
 }
@@ -72,7 +75,6 @@
     background: #ffffff;
 
     border: 1px solid #e6eaf0;
-
     border-radius: 14px;
 
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.04);
@@ -107,6 +109,7 @@
 .bookings-list {
     display: flex;
     flex-direction: column;
+
     gap: 22px;
 }
 
@@ -121,7 +124,6 @@
     background: #ffffff;
 
     border: 1px solid #e6eaf0;
-
     border-radius: 18px;
 
     box-shadow: 0 8px 30px rgba(25, 42, 70, 0.06);
@@ -137,8 +139,23 @@
     box-shadow: 0 14px 40px rgba(25, 42, 70, 0.1);
 }
 
+
+/* Cancelled bookings */
+
 .booking-cancelled {
     opacity: 0.82;
+}
+
+
+/* Completed bookings */
+
+.booking-completed {
+    border-color: #dcefe4;
+}
+
+.booking-completed .booking-icon {
+    background: #edf9f1;
+    color: #21864b;
 }
 
 
@@ -161,6 +178,7 @@
 .booking-reference {
     display: flex;
     align-items: center;
+
     gap: 14px;
 }
 
@@ -210,6 +228,7 @@
 .booking-status {
     display: inline-flex;
     align-items: center;
+
     gap: 7px;
 
     padding: 7px 12px;
@@ -229,6 +248,9 @@
     border-radius: 50%;
 }
 
+
+/* Pending */
+
 .status-pending {
     background: #fff7df;
     color: #9a6b00;
@@ -238,6 +260,9 @@
     background: #f0ad00;
 }
 
+
+/* Confirmed */
+
 .status-confirmed {
     background: #e9f8ef;
     color: #21864b;
@@ -246,6 +271,21 @@
 .status-confirmed .status-dot {
     background: #28a745;
 }
+
+
+/* Completed */
+
+.status-completed {
+    background: #e9f8ef;
+    color: #21864b;
+}
+
+.status-completed .status-dot {
+    background: #28a745;
+}
+
+
+/* Cancelled */
 
 .status-cancelled {
     background: #fdecec;
@@ -443,7 +483,6 @@
     padding: 9px 15px;
 
     border: 1px solid #f0caca;
-
     border-radius: 9px;
 
     background: #ffffff;
@@ -458,7 +497,8 @@
     transition:
         background 0.2s ease,
         border-color 0.2s ease,
-        color 0.2s ease;
+        color 0.2s ease,
+        transform 0.2s ease;
 }
 
 .cancel-booking-btn:hover {
@@ -467,22 +507,20 @@
     border-color: #e8a5a5;
 
     color: #bd2f2f;
+
+    transform: translateY(-1px);
 }
 
 .cancel-booking-btn:disabled {
     opacity: 0.65;
 
     cursor: not-allowed;
+
+    transform: none;
 }
 
 .cancel-booking-btn .bi-arrow-repeat {
     animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 
@@ -503,7 +541,38 @@
 }
 
 .cancelled-message i {
+    color: #dc3545;
+}
+
+
+/* ========================================
+   COMPLETED MESSAGE
+======================================== */
+
+.completed-message {
+    display: inline-flex;
+    align-items: center;
+
+    gap: 7px;
+
+    padding: 8px 13px;
+
+    background: #edf9f1;
+
+    border: 1px solid #d5efdd;
+
+    border-radius: 9px;
+
+    color: #21864b;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.completed-message i {
     color: #28a745;
+
+    font-size: 15px;
 }
 
 
@@ -519,7 +588,6 @@
     background: #ffffff;
 
     border: 1px solid #e6eaf0;
-
     border-radius: 18px;
 
     box-shadow: 0 8px 30px rgba(25, 42, 70, 0.05);
@@ -607,6 +675,412 @@
 
 
 /* ========================================
+   CANCELLATION MODAL
+======================================== */
+
+.cancel-modal-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: rgba(15, 23, 42, 0.55);
+
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+
+    animation: modalOverlayIn 0.2s ease forwards;
+}
+
+
+/* ========================================
+   MODAL BOX
+======================================== */
+
+.cancel-modal {
+    position: relative;
+
+    width: min(480px, 100%);
+
+    padding: 34px;
+
+    background: #ffffff;
+
+    border: 1px solid rgba(255, 255, 255, 0.8);
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 25px 70px rgba(15, 23, 42, 0.22),
+        0 8px 25px rgba(15, 23, 42, 0.08);
+
+    animation: modalContentIn 0.25s ease forwards;
+}
+
+
+/* ========================================
+   MODAL CLOSE BUTTON
+======================================== */
+
+.cancel-modal-close {
+    position: absolute;
+
+    top: 18px;
+    right: 18px;
+
+    width: 36px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f4f6f9;
+
+    color: #6c757d;
+
+    font-size: 20px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.cancel-modal-close:hover {
+    background: #e9edf3;
+
+    color: #202938;
+
+    transform: rotate(90deg);
+}
+
+.cancel-modal-close:disabled {
+    opacity: 0.5;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* ========================================
+   MODAL ICON
+======================================== */
+
+.cancel-modal-icon {
+    width: 68px;
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 20px;
+
+    border-radius: 20px;
+
+    background: #fff1f1;
+
+    color: #dc3545;
+
+    font-size: 28px;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(220, 53, 69, 0.06);
+}
+
+
+/* ========================================
+   MODAL HEADING
+======================================== */
+
+.cancel-modal h2 {
+    margin: 0 0 10px;
+
+    text-align: center;
+
+    color: #172033;
+
+    font-size: 24px;
+    font-weight: 800;
+
+    letter-spacing: -0.4px;
+}
+
+.cancel-modal-description {
+    max-width: 390px;
+
+    margin: 0 auto 25px;
+
+    text-align: center;
+
+    color: #737d8d;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* ========================================
+   BOOKING SUMMARY
+======================================== */
+
+.cancel-booking-summary {
+    margin-bottom: 22px;
+
+    padding: 5px 16px;
+
+    background: #f8fafd;
+
+    border: 1px solid #e8edf4;
+
+    border-radius: 14px;
+}
+
+.cancel-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 13px 0;
+
+    border-bottom: 1px solid #e7ebf1;
+}
+
+.cancel-summary-row:last-child {
+    border-bottom: none;
+}
+
+.cancel-summary-row span {
+    color: #8993a4;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.cancel-summary-row strong {
+    color: #202938;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+/* ========================================
+   CANCEL ERROR
+======================================== */
+
+.cancel-error-message {
+    display: flex;
+    align-items: flex-start;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    background: #fff3f3;
+
+    border: 1px solid #f2cccc;
+
+    border-radius: 10px;
+
+    color: #c73737;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+.cancel-error-message i {
+    margin-top: 1px;
+
+    flex-shrink: 0;
+
+    font-size: 15px;
+}
+
+
+/* ========================================
+   MODAL ACTIONS
+======================================== */
+
+.cancel-modal-actions {
+    display: flex;
+
+    gap: 12px;
+}
+
+.keep-booking-btn,
+.confirm-cancel-btn {
+    flex: 1;
+
+    min-height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+/* ========================================
+   KEEP BOOKING
+======================================== */
+
+.keep-booking-btn {
+    border: 1px solid #dfe4eb;
+
+    background: #ffffff;
+
+    color: #4f5968;
+}
+
+.keep-booking-btn:hover {
+    background: #f7f9fc;
+
+    border-color: #cfd6e0;
+
+    color: #202938;
+
+    transform: translateY(-1px);
+}
+
+.keep-booking-btn:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* ========================================
+   CONFIRM CANCEL
+======================================== */
+
+.confirm-cancel-btn {
+    border: 1px solid #dc3545;
+
+    background: #dc3545;
+
+    color: #ffffff;
+
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.18);
+}
+
+.confirm-cancel-btn:hover {
+    background: #c92f3f;
+
+    border-color: #c92f3f;
+
+    box-shadow: 0 7px 18px rgba(220, 53, 69, 0.25);
+
+    transform: translateY(-1px);
+}
+
+.confirm-cancel-btn:disabled {
+    opacity: 0.7;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* ========================================
+   MODAL LOADING SPINNER
+======================================== */
+
+.cancel-spinner {
+    width: 15px;
+    height: 15px;
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+
+    border-radius: 50%;
+
+    animation: spin 0.7s linear infinite;
+}
+
+
+/* ========================================
+   MODAL ANIMATIONS
+======================================== */
+
+@keyframes modalOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes modalContentIn {
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+/* ========================================
    TABLETS
 ======================================== */
 
@@ -650,6 +1124,13 @@
 
     .booking-card-footer {
         padding: 16px 20px;
+    }
+
+
+    /* Modal */
+
+    .cancel-modal {
+        padding: 30px;
     }
 }
 
@@ -720,6 +1201,7 @@
 
     .date-divider {
         width: 100%;
+
         height: 25px;
     }
 
@@ -747,12 +1229,88 @@
         width: 100%;
     }
 
-    .cancelled-message {
+    .cancelled-message,
+    .completed-message {
         justify-content: center;
     }
 
     .bookings-empty {
         padding: 60px 20px;
+    }
+
+
+    /* Modal */
+
+    .cancel-modal-overlay {
+        align-items: flex-end;
+
+        padding: 12px;
+    }
+
+    .cancel-modal {
+        width: 100%;
+
+        padding: 28px 20px 20px;
+
+        border-radius: 20px;
+    }
+
+    .cancel-modal-icon {
+        width: 58px;
+        height: 58px;
+
+        margin-bottom: 16px;
+
+        border-radius: 17px;
+
+        font-size: 24px;
+    }
+
+    .cancel-modal h2 {
+        font-size: 21px;
+    }
+
+    .cancel-modal-description {
+        margin-bottom: 20px;
+
+        font-size: 13px;
+    }
+
+    .cancel-booking-summary {
+        padding: 4px 14px;
+    }
+
+    .cancel-summary-row {
+        gap: 12px;
+
+        padding: 11px 0;
+    }
+
+    .cancel-summary-row span {
+        font-size: 11px;
+    }
+
+    .cancel-summary-row strong {
+        font-size: 12px;
+    }
+
+    .cancel-modal-actions {
+        flex-direction: column-reverse;
+
+        gap: 9px;
+    }
+
+    .keep-booking-btn,
+    .confirm-cancel-btn {
+        width: 100%;
+    }
+
+    .cancel-modal-close {
+        top: 14px;
+        right: 14px;
+
+        width: 34px;
+        height: 34px;
     }
 }
 

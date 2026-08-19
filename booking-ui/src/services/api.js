@@ -1,12 +1,14 @@
 const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 
-// =========================
+// =========================================================
 // HOTELS
-// =========================
+// =========================================================
 
 export async function getHotels() {
-    const response = await fetch(`${API_BASE_URL}/hotels/`);
+    const response = await fetch(
+        `${API_BASE_URL}/hotels/`
+    );
 
     if (!response.ok) {
         throw new Error("Failed to fetch hotels");
@@ -29,9 +31,40 @@ export async function getHotel(id) {
 }
 
 
-// =========================
+// =========================================================
+// HOTEL SEARCH
+// =========================================================
+
+export async function searchHotels(params) {
+    const query = new URLSearchParams();
+
+    // Add only values that actually exist
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null && value !== "") {
+            query.append(key, value);
+        }
+    });
+
+    const response = await fetch(
+        `${API_BASE_URL}/hotels/search/?${query.toString()}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw {
+            status: response.status,
+            data: data,
+        };
+    }
+
+    return data;
+}
+
+
+// =========================================================
 // ROOMS
-// =========================
+// =========================================================
 
 export async function getRoomsByHotel(hotelId) {
     const response = await fetch(
@@ -59,9 +92,9 @@ export async function getRoom(id) {
 }
 
 
-// =========================
+// =========================================================
 // AUTHENTICATION
-// =========================
+// =========================================================
 
 export async function registerUser(userData) {
     const response = await fetch(
@@ -117,14 +150,16 @@ export async function loginUser(credentials) {
 }
 
 
-// =========================
+// =========================================================
 // BOOKINGS
-// =========================
+// =========================================================
 
 export async function getBookings(token) {
     const response = await fetch(
         `${API_BASE_URL}/bookings/`,
         {
+            method: "GET",
+
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -167,3 +202,4 @@ export async function cancelBooking(id, token) {
 
     return data;
 }
+

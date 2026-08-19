@@ -4,6 +4,7 @@ from rest_framework import serializers
 from .models import Hotel, Room, Booking
 
 
+# search hotel serializer
 class HotelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Hotel
