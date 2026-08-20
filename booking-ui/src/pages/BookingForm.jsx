@@ -1,6 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DatePicker from "react-datepicker";
+import {
+    authenticatedFetch,
+    getRoom,
+    getHotel,
+} from "../services/api";
 import "react-datepicker/dist/react-datepicker.css";
 import "./BookingForm.css";
 
@@ -15,6 +20,120 @@ function BookingForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    // Room / hotel details
+    const [roomDetails, setRoomDetails] = useState(null);
+    const [hotelDetails, setHotelDetails] = useState(null);
+    const [roomLoading, setRoomLoading] = useState(true);
+
+    // Booking success modal
+    const [bookingSuccess, setBookingSuccess] = useState(null);
+
+
+    /*
+    =========================================================
+    LOAD ROOM + HOTEL DETAILS
+    =========================================================
+    */
+
+    useEffect(() => {
+        const loadRoomDetails = async () => {
+            try {
+                setRoomLoading(true);
+                setError("");
+
+                const room = await getRoom(roomId);
+
+                console.log("ROOM API RESPONSE:", room);
+
+                setRoomDetails(room);
+
+
+                /*
+                =================================================
+                FIND HOTEL ID
+                =================================================
+                */
+
+                let hotelId = null;
+
+                // Case 1:
+                // room.hotel is an ID
+                if (
+                    room?.hotel !== undefined &&
+                    room?.hotel !== null &&
+                    typeof room.hotel !== "object"
+                ) {
+                    hotelId = room.hotel;
+                }
+
+                // Case 2:
+                // room.hotel is an object
+                else if (
+                    room?.hotel &&
+                    typeof room.hotel === "object"
+                ) {
+                    hotelId =
+                        room.hotel.id ||
+                        room.hotel.pk;
+                }
+
+                // Case 3:
+                // Some serializers may return hotel_id
+                else if (room?.hotel_id) {
+                    hotelId = room.hotel_id;
+                }
+
+
+                /*
+                =================================================
+                LOAD HOTEL DETAILS
+                =================================================
+                */
+
+                if (hotelId) {
+                    try {
+                        const hotel = await getHotel(hotelId);
+
+                        console.log(
+                            "HOTEL API RESPONSE:",
+                            hotel
+                        );
+
+                        setHotelDetails(hotel);
+
+                    } catch (hotelError) {
+                        console.error(
+                            "Failed to load hotel details:",
+                            hotelError
+                        );
+                    }
+                }
+
+            } catch (error) {
+                console.error(
+                    "Failed to load room details:",
+                    error
+                );
+
+                setError(
+                    "Unable to load room details. Please try again."
+                );
+
+            } finally {
+                setRoomLoading(false);
+            }
+        };
+
+        loadRoomDetails();
+    }, [roomId]);
+
+
+    /*
+    =========================================================
+    FORMAT DATE FOR API
+    =========================================================
+    */
+
     const formatDate = (date) => {
         if (!date) return "";
 
@@ -25,6 +144,13 @@ function BookingForm() {
         return `${year}-${month}-${day}`;
     };
 
+
+    /*
+    =========================================================
+    FORMAT DATE FOR DISPLAY
+    =========================================================
+    */
+
     const formatDisplayDate = (date) => {
         if (!date) return "Select date";
 
@@ -34,6 +160,13 @@ function BookingForm() {
             year: "numeric",
         });
     };
+
+
+    /*
+    =========================================================
+    GUEST COUNTER
+    =========================================================
+    */
 
     const handleGuestChange = (change) => {
         setGuests((current) => {
@@ -46,24 +179,112 @@ function BookingForm() {
         });
     };
 
+
+    /*
+    =========================================================
+    GET HOTEL NAME
+    =========================================================
+    */
+
+    const getHotelName = () => {
+        return (
+            hotelDetails?.name ||
+            hotelDetails?.hotel_name ||
+            roomDetails?.hotel?.name ||
+            roomDetails?.hotel_name ||
+            "Hotel"
+        );
+    };
+
+
+    /*
+    =========================================================
+    GET HOTEL LOCATION
+    =========================================================
+    */
+
+    const getHotelLocation = () => {
+        if (hotelDetails) {
+
+            // Most likely field
+            if (hotelDetails.city) {
+                return hotelDetails.city;
+            }
+
+            if (hotelDetails.location) {
+                return hotelDetails.location;
+            }
+
+            if (hotelDetails.address) {
+                return hotelDetails.address;
+            }
+
+            // If your API uses destination
+            if (hotelDetails.destination) {
+                return hotelDetails.destination;
+            }
+        }
+
+        // Fallback to room response
+        return (
+            roomDetails?.hotel?.city ||
+            roomDetails?.hotel?.location ||
+            roomDetails?.city ||
+            roomDetails?.location ||
+            "Location unavailable"
+        );
+    };
+
+
+    /*
+    =========================================================
+    GET ROOM TYPE
+    =========================================================
+    */
+
+    const getRoomType = () => {
+        return (
+            roomDetails?.room_type ||
+            roomDetails?.room_name ||
+            roomDetails?.roomType ||
+            roomDetails?.type ||
+            roomDetails?.name ||
+            "Room"
+        );
+    };
+
+
+    /*
+    =========================================================
+    BOOKING SUBMIT
+    =========================================================
+    */
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         setError("");
 
+        // Validate dates
         if (!checkIn || !checkOut) {
-            setError("Please select both check-in and check-out dates.");
+            setError(
+                "Please select both check-in and check-out dates."
+            );
             return;
         }
 
         if (checkOut <= checkIn) {
-            setError("Check-out date must be after the check-in date.");
+            setError(
+                "Check-out date must be after the check-in date."
+            );
             return;
         }
 
-        const token = localStorage.getItem("access_token");
+        // Check refresh token
+        const refreshToken =
+            localStorage.getItem("refresh_token");
 
-        if (!token) {
+        if (!refreshToken) {
             navigate("/login");
             return;
         }
@@ -71,14 +292,15 @@ function BookingForm() {
         setLoading(true);
 
         try {
-            const response = await fetch(
+            const response = await authenticatedFetch(
                 "http://127.0.0.1:8000/api/bookings/",
                 {
                     method: "POST",
+
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
                     },
+
                     body: JSON.stringify({
                         room: Number(roomId),
                         check_in: formatDate(checkIn),
@@ -90,6 +312,12 @@ function BookingForm() {
 
             const data = await response.json();
 
+            /*
+            =================================================
+            BOOKING ERROR
+            =================================================
+            */
+
             if (!response.ok) {
                 setError(
                     data.room?.[0] ||
@@ -99,38 +327,103 @@ function BookingForm() {
                     data.detail ||
                     "Booking failed. Please try again."
                 );
+
                 return;
             }
 
-            alert(
-                `Booking successful!\nReference: ${data.booking_reference}`
+
+            /*
+            =================================================
+            BOOKING SUCCESS
+            =================================================
+            */
+
+            console.log(
+                "BOOKING API RESPONSE:",
+                data
             );
 
-            navigate("/bookings");
+            setBookingSuccess({
+                reference:
+                    data.booking_reference ||
+                    data.reference ||
+                    "Booking confirmed",
+
+                hotelName: getHotelName(),
+
+                location: getHotelLocation(),
+
+                roomType: getRoomType(),
+
+                checkIn: formatDisplayDate(checkIn),
+
+                checkOut: formatDisplayDate(checkOut),
+
+                guests: Number(guests),
+            });
+
         } catch (error) {
-            console.error("Booking error:", error);
-            setError("Unable to connect to the server.");
+            console.error(
+                "Booking error:",
+                error
+            );
+
+            setError(
+                "Unable to connect to the server. Please try again."
+            );
+
         } finally {
             setLoading(false);
         }
     };
 
+
+    /*
+    =========================================================
+    SUCCESS MODAL - VIEW BOOKINGS
+    =========================================================
+    */
+
+    const handleViewBookings = () => {
+        navigate("/bookings");
+    };
+
+
+    /*
+    =========================================================
+    SUCCESS MODAL - CLOSE
+    =========================================================
+    */
+
+    const handleCloseSuccess = () => {
+        setBookingSuccess(null);
+    };
+
+
     return (
         <div className="booking-form-page">
+
             <div className="container">
 
                 <div className="booking-form-wrapper">
 
-                    {/* Header */}
+                    {/* =================================================
+                        HEADER
+                    ================================================= */}
+
                     <div className="booking-form-header">
 
                         <div className="booking-label-wrapper">
+
                             <span className="booking-label">
                                 COMPLETE YOUR RESERVATION
                             </span>
+
                         </div>
 
-                        <h1>Book Your Room</h1>
+                        <h1>
+                            Book Your Room
+                        </h1>
 
                         <p>
                             Select your dates and number of guests to
@@ -140,41 +433,65 @@ function BookingForm() {
                     </div>
 
 
-                    {/* Error */}
+                    {/* =================================================
+                        ERROR
+                    ================================================= */}
+
                     {error && (
                         <div className="booking-error">
+
                             <i className="bi bi-exclamation-circle-fill"></i>
 
                             <div>
-                                <strong>Booking could not be completed</strong>
-                                <span>{error}</span>
+
+                                <strong>
+                                    Booking could not be completed
+                                </strong>
+
+                                <span>
+                                    {error}
+                                </span>
+
                             </div>
+
                         </div>
                     )}
 
 
-                    {/* Booking Card */}
+                    {/* =================================================
+                        MAIN BOOKING FORM
+                    ================================================= */}
+
                     <form
                         onSubmit={handleSubmit}
                         className="booking-form-card"
                     >
 
-                        {/* Date Section */}
+                        {/* =================================================
+                            DATE SECTION
+                        ================================================= */}
+
                         <div className="booking-section">
 
                             <div className="booking-section-header">
 
                                 <div className="booking-section-icon">
+
                                     <i className="bi bi-calendar3"></i>
+
                                 </div>
 
                                 <div>
-                                    <h2>Check-in & Check-out</h2>
+
+                                    <h2>
+                                        Check-in & Check-out
+                                    </h2>
 
                                     <p>
                                         Select your arrival and departure
                                         dates.
                                     </p>
+
                                 </div>
 
                             </div>
@@ -198,6 +515,7 @@ function BookingForm() {
 
 
                             {/* Selected Dates */}
+
                             <div className="selected-dates">
 
                                 <div
@@ -209,22 +527,30 @@ function BookingForm() {
                                 >
 
                                     <div className="selected-date-icon">
+
                                         <i className="bi bi-box-arrow-in-right"></i>
+
                                     </div>
 
                                     <div>
-                                        <small>CHECK-IN</small>
+
+                                        <small>
+                                            CHECK-IN
+                                        </small>
 
                                         <strong>
                                             {formatDisplayDate(checkIn)}
                                         </strong>
+
                                     </div>
 
                                 </div>
 
 
                                 <div className="date-arrow">
+
                                     <i className="bi bi-arrow-right"></i>
+
                                 </div>
 
 
@@ -237,15 +563,21 @@ function BookingForm() {
                                 >
 
                                     <div className="selected-date-icon">
+
                                         <i className="bi bi-box-arrow-right"></i>
+
                                     </div>
 
                                     <div>
-                                        <small>CHECK-OUT</small>
+
+                                        <small>
+                                            CHECK-OUT
+                                        </small>
 
                                         <strong>
                                             {formatDisplayDate(checkOut)}
                                         </strong>
+
                                     </div>
 
                                 </div>
@@ -255,21 +587,30 @@ function BookingForm() {
                         </div>
 
 
-                        {/* Guests Section */}
+                        {/* =================================================
+                            GUEST SECTION
+                        ================================================= */}
+
                         <div className="booking-section">
 
                             <div className="booking-section-header">
 
                                 <div className="booking-section-icon">
+
                                     <i className="bi bi-people"></i>
+
                                 </div>
 
                                 <div>
-                                    <h2>Guests</h2>
+
+                                    <h2>
+                                        Guests
+                                    </h2>
 
                                     <p>
                                         How many guests will be staying?
                                     </p>
+
                                 </div>
 
                             </div>
@@ -280,12 +621,21 @@ function BookingForm() {
                                 <div className="guest-info">
 
                                     <div className="guest-icon">
+
                                         <i className="bi bi-person"></i>
+
                                     </div>
 
                                     <div>
-                                        <strong>Guests</strong>
-                                        <span>Maximum 20 guests</span>
+
+                                        <strong>
+                                            Guests
+                                        </strong>
+
+                                        <span>
+                                            Maximum 20 guests
+                                        </span>
+
                                     </div>
 
                                 </div>
@@ -330,37 +680,52 @@ function BookingForm() {
                         </div>
 
 
-                        {/* Summary */}
+                        {/* =================================================
+                            SECURITY SUMMARY
+                        ================================================= */}
+
                         <div className="booking-summary">
 
                             <div className="summary-icon">
+
                                 <i className="bi bi-shield-check"></i>
+
                             </div>
 
                             <div>
-                                <strong>Secure reservation</strong>
+
+                                <strong>
+                                    Secure reservation
+                                </strong>
 
                                 <span>
                                     Your booking details are securely
                                     processed.
                                 </span>
+
                             </div>
 
                         </div>
 
 
-                        {/* Submit */}
+                        {/* =================================================
+                            SUBMIT BUTTON
+                        ================================================= */}
+
                         <button
                             type="submit"
                             className="confirm-booking-button"
                             disabled={
                                 loading ||
+                                roomLoading ||
                                 !checkIn ||
                                 !checkOut
                             }
                         >
+
                             {loading ? (
                                 <>
+
                                     <span
                                         className="spinner-border spinner-border-sm"
                                         role="status"
@@ -368,22 +733,28 @@ function BookingForm() {
                                     ></span>
 
                                     Processing Booking...
+
                                 </>
                             ) : (
                                 <>
+
                                     <i className="bi bi-calendar-check"></i>
 
                                     Confirm Booking
 
                                     <i className="bi bi-arrow-right"></i>
+
                                 </>
                             )}
+
                         </button>
 
 
                         <p className="booking-footer-text">
+
                             By confirming your booking, you agree to
                             our booking terms and conditions.
+
                         </p>
 
                     </form>
@@ -391,9 +762,246 @@ function BookingForm() {
                 </div>
 
             </div>
+
+
+            {/* =========================================================
+                BOOKING SUCCESS MODAL
+            ========================================================= */}
+
+            {bookingSuccess && (
+
+                <div
+                    className="booking-success-overlay"
+                    onClick={handleCloseSuccess}
+                >
+
+                    <div
+                        className="booking-success-modal"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+
+                        {/* Success Icon */}
+
+                        <div className="booking-success-icon">
+
+                            <i className="bi bi-check-lg"></i>
+
+                        </div>
+
+
+                        {/* Heading */}
+
+                        <div className="booking-success-heading">
+
+                            <span className="booking-success-label">
+                                BOOKING CONFIRMED
+                            </span>
+
+                            <h2>
+                                Your stay is booked!
+                            </h2>
+
+                            <p>
+                                Your reservation has been successfully
+                                confirmed.
+                            </p>
+
+                        </div>
+
+
+                        {/* Booking Reference */}
+
+                        <div className="booking-reference">
+
+                            <span>
+                                BOOKING REFERENCE
+                            </span>
+
+                            <strong>
+                                {bookingSuccess.reference}
+                            </strong>
+
+                        </div>
+
+
+                        {/* Hotel Details */}
+
+                        <div className="booking-success-details">
+
+                            <div className="booking-success-detail">
+
+                                <div className="booking-success-detail-icon">
+                                    <i className="bi bi-building"></i>
+                                </div>
+
+                                <div>
+
+                                    <small>
+                                        HOTEL
+                                    </small>
+
+                                    <strong>
+                                        {bookingSuccess.hotelName}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="booking-success-detail">
+
+                                <div className="booking-success-detail-icon">
+                                    <i className="bi bi-geo-alt"></i>
+                                </div>
+
+                                <div>
+
+                                    <small>
+                                        LOCATION
+                                    </small>
+
+                                    <strong>
+                                        {bookingSuccess.location}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="booking-success-detail">
+
+                                <div className="booking-success-detail-icon">
+                                    <i className="bi bi-door-open"></i>
+                                </div>
+
+                                <div>
+
+                                    <small>
+                                        ROOM TYPE
+                                    </small>
+
+                                    <strong>
+                                        {bookingSuccess.roomType}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            <div className="booking-success-detail">
+
+                                <div className="booking-success-detail-icon">
+                                    <i className="bi bi-people"></i>
+                                </div>
+
+                                <div>
+
+                                    <small>
+                                        GUESTS
+                                    </small>
+
+                                    <strong>
+                                        {bookingSuccess.guests}
+                                        {bookingSuccess.guests === 1
+                                            ? " Guest"
+                                            : " Guests"}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Dates */}
+
+                        <div className="booking-success-dates">
+
+                            <div>
+
+                                <small>
+                                    CHECK-IN
+                                </small>
+
+                                <strong>
+                                    {bookingSuccess.checkIn}
+                                </strong>
+
+                            </div>
+
+
+                            <div className="booking-success-date-arrow">
+
+                                <i className="bi bi-arrow-right"></i>
+
+                            </div>
+
+
+                            <div>
+
+                                <small>
+                                    CHECK-OUT
+                                </small>
+
+                                <strong>
+                                    {bookingSuccess.checkOut}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        {/* Actions */}
+
+                        <div className="booking-success-actions">
+
+                            <button
+                                type="button"
+                                className="booking-success-primary"
+                                onClick={handleViewBookings}
+                            >
+
+                                <i className="bi bi-calendar-check"></i>
+
+                                View My Bookings
+
+                            </button>
+
+
+                            <button
+                                type="button"
+                                className="booking-success-secondary"
+                                onClick={handleCloseSuccess}
+                            >
+
+                                Continue Browsing
+
+                            </button>
+
+                        </div>
+
+
+                        <p className="booking-success-note">
+
+                            <i className="bi bi-shield-check"></i>
+
+                            Your booking has been securely saved.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            )}
+
         </div>
     );
 }
 
 export default BookingForm;
-

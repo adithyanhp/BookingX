@@ -68,6 +68,8 @@ SIMPLE_JWT = {
 }
 
 
+
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",

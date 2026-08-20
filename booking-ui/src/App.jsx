@@ -10,12 +10,16 @@ import Testimonials from "./components/Testimonials";
 import AppSection from "./components/AppSection";
 import Footer from "./components/Footer";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Hotels from "./pages/Hotels";
 import HotelDetails from "./pages/HotelDetails";
 import BookingForm from "./pages/BookingForm";
 import MyBookings from "./pages/MyBookings";
+
+import { AuthProvider } from "./context/AuthContext";
 
 
 /* =========================================================
@@ -49,90 +53,102 @@ function Home() {
 
 function App() {
   return (
-    <BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
 
-      <Routes>
+        <Routes>
 
-        {/* =========================
-            HOME
-        ========================= */}
+          {/* =========================
+              HOME
+          ========================= */}
 
-        <Route
-          path="/"
-          element={<Home />}
-        />
-
-
-        {/* =========================
-            HOTEL SEARCH RESULTS
-        =========================
-        
-        Example:
-        /hotels?location=Kochi&check_in=2026-11-01&check_out=2026-11-03&adults=2&children=0&guests=2&rooms=1
-        */}
-
-        <Route
-          path="/hotels"
-          element={<Hotels />}
-        />
+          <Route
+            path="/"
+            element={<Home />}
+          />
 
 
-        {/* =========================
-            HOTEL DETAILS
-        =========================
-        
-        Example:
-        /hotels/1
-        */}
+          {/* =========================
+              HOTEL SEARCH RESULTS
+          =========================
 
-        <Route
-          path="/hotels/:id"
-          element={<HotelDetails />}
-        />
+          Example:
+          /hotels?location=Kochi&check_in=2026-11-01&check_out=2026-11-03&adults=2&children=0&guests=2&rooms=1
+          */}
 
-
-        {/* =========================
-            BOOKING
-        =========================
-        
-        Example:
-        /booking/1
-        */}
-
-        <Route
-          path="/booking/:roomId"
-          element={<BookingForm />}
-        />
+          <Route
+            path="/hotels"
+            element={<Hotels />}
+          />
 
 
-        {/* =========================
-            AUTHENTICATION
-        ========================= */}
+          {/* =========================
+              HOTEL DETAILS
+          =========================
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+          Example:
+          /hotels/1
+          */}
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
+          <Route
+            path="/hotels/:id"
+            element={<HotelDetails />}
+          />
 
 
-        {/* =========================
-            MY BOOKINGS
-        ========================= */}
+          {/* =========================
+              AUTHENTICATION
+          ========================= */}
 
-        <Route
-          path="/bookings"
-          element={<MyBookings />}
-        />
+          <Route
+            path="/login"
+            element={<Login />}
+          />
 
-      </Routes>
+          <Route
+            path="/register"
+            element={<Register />}
+          />
 
-    </BrowserRouter>
+
+          {/* =================================================
+              PROTECTED ROUTES
+              Login required
+          ================================================= */}
+
+          <Route element={<ProtectedRoute />}>
+
+            {/* =========================
+                BOOKING
+            =========================
+
+            Example:
+            /booking/1
+            */}
+
+            <Route
+              path="/booking/:roomId"
+              element={<BookingForm />}
+            />
+
+
+            {/* =========================
+                MY BOOKINGS
+            ========================= */}
+
+            <Route
+              path="/bookings"
+              element={<MyBookings />}
+            />
+
+          </Route>
+
+        </Routes>
+
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 
 export default App;
+

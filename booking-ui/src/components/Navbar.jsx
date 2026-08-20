@@ -1,25 +1,13 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function Navbar() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("access_token")
-  );
-
-  // Update navbar when the user logs in or logs out
-  useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem("access_token"));
-  }, [location.pathname]);
+  const { isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-
-    setIsLoggedIn(false);
-
+    logout();
     navigate("/");
   };
 
@@ -39,6 +27,7 @@ function Navbar() {
             </span>
           </Link>
 
+
           {/* Mobile menu button */}
           <button
             className="navbar-toggler"
@@ -52,38 +41,57 @@ function Navbar() {
             <i className="bi bi-list"></i>
           </button>
 
+
           {/* Navigation */}
-          <div className="collapse navbar-collapse" id="mainNavbar">
+          <div
+            className="collapse navbar-collapse"
+            id="mainNavbar"
+          >
 
             <ul className="navbar-nav mx-auto booking-nav">
 
               {/* Hotels */}
               <li className="nav-item">
-                <Link className="nav-link active" to="/">
+                <Link
+                  className="nav-link active"
+                  to="/"
+                >
                   <i className="bi bi-building"></i>
                   Hotels
                 </Link>
               </li>
 
+
               {/* Flights */}
               <li className="nav-item">
-                <Link className="nav-link" to="/">
+                <Link
+                  className="nav-link"
+                  to="/"
+                >
                   <i className="bi bi-airplane"></i>
                   Flights
                 </Link>
               </li>
 
+
               {/* Tours */}
               <li className="nav-item">
-                <Link className="nav-link" to="/">
+                <Link
+                  className="nav-link"
+                  to="/"
+                >
                   <i className="bi bi-map"></i>
                   Tours
                 </Link>
               </li>
 
+
               {/* Cabs */}
               <li className="nav-item">
-                <Link className="nav-link" to="/">
+                <Link
+                  className="nav-link"
+                  to="/"
+                >
                   <i className="bi bi-car-front"></i>
                   Cabs
                 </Link>
@@ -91,10 +99,11 @@ function Navbar() {
 
             </ul>
 
+
             {/* Right side */}
             <div className="navbar-actions">
 
-              {isLoggedIn ? (
+              {isAuthenticated ? (
                 <>
                   {/* My Bookings */}
                   <Link
@@ -104,6 +113,7 @@ function Navbar() {
                     <i className="bi bi-calendar-check"></i>
                     My Bookings
                   </Link>
+
 
                   {/* Logout */}
                   <button
@@ -124,6 +134,7 @@ function Navbar() {
                     <i className="bi bi-person"></i>
                     Login
                   </Link>
+
 
                   {/* Register */}
                   <Link
@@ -146,3 +157,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

@@ -17,15 +17,94 @@ function Register() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+
+    /* =========================================================
+       ERROR MESSAGE HELPER
+    ========================================================= */
+
+    const getErrorMessage = (error) => {
+        if (!error) {
+            return "Unable to create your account.";
+        }
+
+        // API error structure:
+        // {
+        //     status: 400,
+        //     data: {...}
+        // }
+
+        if (error.data) {
+            const data = error.data;
+
+            if (typeof data === "string") {
+                return data;
+            }
+
+            if (data.detail) {
+                return data.detail;
+            }
+
+            if (data.message) {
+                return data.message;
+            }
+
+            // Django validation errors
+            if (data.username) {
+                return Array.isArray(data.username)
+                    ? data.username[0]
+                    : data.username;
+            }
+
+            if (data.email) {
+                return Array.isArray(data.email)
+                    ? data.email[0]
+                    : data.email;
+            }
+
+            if (data.password) {
+                return Array.isArray(data.password)
+                    ? data.password[0]
+                    : data.password;
+            }
+
+            if (data.password2) {
+                return Array.isArray(data.password2)
+                    ? data.password2[0]
+                    : data.password2;
+            }
+
+            // Handle non-field errors
+            if (data.non_field_errors) {
+                return Array.isArray(data.non_field_errors)
+                    ? data.non_field_errors[0]
+                    : data.non_field_errors;
+            }
+        }
+
+        if (error.message) {
+            return error.message;
+        }
+
+        return "Unable to create your account.";
+    };
+
+
+    /* =========================================================
+       REGISTER
+    ========================================================= */
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         setError("");
 
+
+        // Password confirmation
         if (password !== password2) {
             setError("Passwords do not match.");
             return;
         }
+
 
         setLoading(true);
 
@@ -37,6 +116,8 @@ function Register() {
                 password2,
             });
 
+
+            // Registration successful
             navigate("/login", {
                 state: {
                     successMessage:
@@ -45,11 +126,13 @@ function Register() {
             });
 
         } catch (error) {
-            console.error("Registration error:", error);
+            console.error(
+                "Registration error:",
+                error
+            );
 
             setError(
-                error.message ||
-                "Unable to create your account."
+                getErrorMessage(error)
             );
 
         } finally {
@@ -57,18 +140,25 @@ function Register() {
         }
     };
 
+
     return (
         <div className="auth-page">
 
-            {/* Left Side */}
+            {/* =================================================
+                LEFT SIDE
+            ================================================= */}
+
             <div className="auth-visual">
 
                 <div className="auth-visual-overlay"></div>
 
                 <div className="auth-visual-content">
 
-                    <Link to="/" className="auth-logo">
-
+                    {/* Logo */}
+                    <Link
+                        to="/"
+                        className="auth-logo"
+                    >
                         <span className="auth-logo-icon">
                             <i className="bi bi-buildings"></i>
                         </span>
@@ -76,14 +166,15 @@ function Register() {
                         <span>
                             Booking<span>X</span>
                         </span>
-
                     </Link>
 
 
+                    {/* Visual text */}
                     <div className="auth-visual-text">
 
                         <span className="auth-eyebrow">
                             <i className="bi bi-globe2"></i>
+
                             YOUR JOURNEY BEGINS HERE
                         </span>
 
@@ -102,16 +193,23 @@ function Register() {
                     </div>
 
 
+                    {/* Trust items */}
                     <div className="auth-trust">
 
                         <div className="auth-trust-item">
                             <i className="bi bi-search"></i>
-                            <span>Find great stays</span>
+
+                            <span>
+                                Find great stays
+                            </span>
                         </div>
 
                         <div className="auth-trust-item">
                             <i className="bi bi-calendar-check"></i>
-                            <span>Manage bookings</span>
+
+                            <span>
+                                Manage bookings
+                            </span>
                         </div>
 
                     </div>
@@ -121,7 +219,10 @@ function Register() {
             </div>
 
 
-            {/* Right Side */}
+            {/* =================================================
+                RIGHT SIDE
+            ================================================= */}
+
             <div className="auth-form-section">
 
                 <div className="auth-form-container">
@@ -129,7 +230,10 @@ function Register() {
                     {/* Mobile Logo */}
                     <div className="auth-mobile-logo">
 
-                        <Link to="/" className="auth-logo">
+                        <Link
+                            to="/"
+                            className="auth-logo"
+                        >
 
                             <span className="auth-logo-icon">
                                 <i className="bi bi-buildings"></i>
@@ -156,7 +260,8 @@ function Register() {
                         </h2>
 
                         <p>
-                            Join BookingX and start planning your next stay.
+                            Join BookingX and start planning your
+                            next stay.
                         </p>
 
                     </div>
@@ -176,7 +281,10 @@ function Register() {
                     )}
 
 
-                    {/* Form */}
+                    {/* =================================================
+                        FORM
+                    ================================================= */}
+
                     <form
                         className="auth-form"
                         onSubmit={handleSubmit}
@@ -199,7 +307,9 @@ function Register() {
                                     placeholder="Choose a username"
                                     value={username}
                                     onChange={(e) =>
-                                        setUsername(e.target.value)
+                                        setUsername(
+                                            e.target.value
+                                        )
                                     }
                                     autoComplete="username"
                                     required
@@ -227,7 +337,9 @@ function Register() {
                                     placeholder="Enter your email"
                                     value={email}
                                     onChange={(e) =>
-                                        setEmail(e.target.value)
+                                        setEmail(
+                                            e.target.value
+                                        )
                                     }
                                     autoComplete="email"
                                     required
@@ -259,7 +371,9 @@ function Register() {
                                     placeholder="Create a password"
                                     value={password}
                                     onChange={(e) =>
-                                        setPassword(e.target.value)
+                                        setPassword(
+                                            e.target.value
+                                        )
                                     }
                                     autoComplete="new-password"
                                     required
@@ -316,7 +430,9 @@ function Register() {
                                     placeholder="Confirm your password"
                                     value={password2}
                                     onChange={(e) =>
-                                        setPassword2(e.target.value)
+                                        setPassword2(
+                                            e.target.value
+                                        )
                                     }
                                     autoComplete="new-password"
                                     required
@@ -387,6 +503,7 @@ function Register() {
 
                         <Link to="/login">
                             Sign in
+
                             <i className="bi bi-arrow-up-right"></i>
                         </Link>
 

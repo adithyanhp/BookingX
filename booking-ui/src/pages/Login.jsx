@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { loginUser } from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
 
 function Login() {
     const navigate = useNavigate();
     const location = useLocation();
+
+    const { login } = useAuth();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -14,7 +18,13 @@ function Login() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const successMessage = location.state?.successMessage || "";
+    const successMessage =
+        location.state?.successMessage || "";
+
+
+    /* =========================================================
+       LOGIN
+    ========================================================= */
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -23,59 +33,57 @@ function Login() {
         setLoading(true);
 
         try {
-            const response = await fetch(
-                "http://127.0.0.1:8000/api/auth/login/",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        username,
-                        password,
-                    }),
-                }
-            );
+            const data = await loginUser({
+                username,
+                password,
+            });
 
-            const data = await response.json();
 
-            if (!response.ok) {
-                setError(
-                    data.detail || "Invalid username or password."
-                );
-                return;
-            }
+            /* =================================================
+               UPDATE CENTRAL AUTHENTICATION STATE
+            ================================================= */
 
-            localStorage.setItem(
-                "access_token",
-                data.access
-            );
+            login(data);
 
-            localStorage.setItem(
-                "refresh_token",
-                data.refresh
-            );
+
+            /* =================================================
+               LOGIN SUCCESS
+            ================================================= */
 
             navigate("/");
+
         } catch (error) {
-            console.error(error);
-            setError("Unable to connect to server.");
+            console.error("Login error:", error);
+
+            setError(
+                error?.data?.detail ||
+                "Invalid username or password."
+            );
+
         } finally {
             setLoading(false);
         }
     };
 
+
     return (
         <div className="auth-page">
 
-            {/* Left Side */}
+            {/* =================================================
+                LEFT SIDE
+            ================================================= */}
+
             <div className="auth-visual">
 
                 <div className="auth-visual-overlay"></div>
 
                 <div className="auth-visual-content">
 
-                    <Link to="/" className="auth-logo">
+                    <Link
+                        to="/"
+                        className="auth-logo"
+                    >
+
                         <span className="auth-logo-icon">
                             <i className="bi bi-buildings"></i>
                         </span>
@@ -83,20 +91,27 @@ function Login() {
                         <span>
                             Booking<span>X</span>
                         </span>
+
                     </Link>
+
 
                     <div className="auth-visual-text">
 
                         <span className="auth-eyebrow">
+
                             <i className="bi bi-stars"></i>
+
                             TRAVEL WITH CONFIDENCE
+
                         </span>
+
 
                         <h1>
                             Your next
                             <br />
                             <span>stay</span> starts here.
                         </h1>
+
 
                         <p>
                             Discover comfortable stays, book with ease,
@@ -105,16 +120,28 @@ function Login() {
 
                     </div>
 
+
                     <div className="auth-trust">
 
                         <div className="auth-trust-item">
+
                             <i className="bi bi-shield-check"></i>
-                            <span>Secure booking</span>
+
+                            <span>
+                                Secure booking
+                            </span>
+
                         </div>
 
+
                         <div className="auth-trust-item">
+
                             <i className="bi bi-clock-history"></i>
-                            <span>Easy management</span>
+
+                            <span>
+                                Easy management
+                            </span>
+
                         </div>
 
                     </div>
@@ -124,14 +151,26 @@ function Login() {
             </div>
 
 
-            {/* Right Side */}
+            {/* =================================================
+                RIGHT SIDE
+            ================================================= */}
+
             <div className="auth-form-section">
 
                 <div className="auth-form-container">
 
+
+                    {/* =================================================
+                        MOBILE LOGO
+                    ================================================= */}
+
                     <div className="auth-mobile-logo">
 
-                        <Link to="/" className="auth-logo">
+                        <Link
+                            to="/"
+                            className="auth-logo"
+                        >
+
                             <span className="auth-logo-icon">
                                 <i className="bi bi-buildings"></i>
                             </span>
@@ -139,12 +178,16 @@ function Login() {
                             <span>
                                 Booking<span>X</span>
                             </span>
+
                         </Link>
 
                     </div>
 
 
-                    {/* Heading */}
+                    {/* =================================================
+                        HEADING
+                    ================================================= */}
+
                     <div className="auth-heading">
 
                         <span className="auth-label">
@@ -162,42 +205,64 @@ function Login() {
                     </div>
 
 
-                    {/* Success Message */}
+                    {/* =================================================
+                        SUCCESS MESSAGE
+                    ================================================= */}
+
                     {successMessage && (
+
                         <div className="auth-message auth-success">
+
                             <i className="bi bi-check-circle-fill"></i>
 
                             <span>
                                 {successMessage}
                             </span>
+
                         </div>
+
                     )}
 
 
-                    {/* Error Message */}
+                    {/* =================================================
+                        ERROR MESSAGE
+                    ================================================= */}
+
                     {error && (
+
                         <div className="auth-message auth-error">
+
                             <i className="bi bi-exclamation-circle-fill"></i>
 
                             <span>
                                 {error}
                             </span>
+
                         </div>
+
                     )}
 
 
-                    {/* Form */}
+                    {/* =================================================
+                        LOGIN FORM
+                    ================================================= */}
+
                     <form
                         className="auth-form"
                         onSubmit={handleSubmit}
                     >
 
-                        {/* Username */}
+
+                        {/* =================================================
+                            USERNAME
+                        ================================================= */}
+
                         <div className="auth-field">
 
                             <label htmlFor="username">
                                 Username
                             </label>
+
 
                             <div className="auth-input-wrapper">
 
@@ -220,7 +285,10 @@ function Login() {
                         </div>
 
 
-                        {/* Password */}
+                        {/* =================================================
+                            PASSWORD
+                        ================================================= */}
+
                         <div className="auth-field">
 
                             <div className="auth-label-row">
@@ -231,9 +299,11 @@ function Login() {
 
                             </div>
 
+
                             <div className="auth-input-wrapper">
 
                                 <i className="bi bi-lock"></i>
+
 
                                 <input
                                     id="password"
@@ -251,6 +321,7 @@ function Login() {
                                     required
                                 />
 
+
                                 <button
                                     type="button"
                                     className="password-toggle"
@@ -265,6 +336,7 @@ function Login() {
                                             : "Show password"
                                     }
                                 >
+
                                     <i
                                         className={
                                             showPassword
@@ -272,6 +344,7 @@ function Login() {
                                                 : "bi bi-eye"
                                         }
                                     ></i>
+
                                 </button>
 
                             </div>
@@ -279,7 +352,10 @@ function Login() {
                         </div>
 
 
-                        {/* Submit */}
+                        {/* =================================================
+                            SUBMIT
+                        ================================================= */}
+
                         <button
                             type="submit"
                             className="auth-submit-btn"
@@ -287,15 +363,21 @@ function Login() {
                         >
 
                             {loading ? (
+
                                 <>
                                     <span className="auth-spinner"></span>
+
                                     Logging in...
                                 </>
+
                             ) : (
+
                                 <>
                                     Sign In
+
                                     <i className="bi bi-arrow-right"></i>
                                 </>
+
                             )}
 
                         </button>
@@ -303,7 +385,10 @@ function Login() {
                     </form>
 
 
-                    {/* Register */}
+                    {/* =================================================
+                        REGISTER
+                    ================================================= */}
+
                     <div className="auth-switch">
 
                         <span>
@@ -311,20 +396,29 @@ function Login() {
                         </span>
 
                         <Link to="/register">
+
                             Create one
+
                             <i className="bi bi-arrow-up-right"></i>
+
                         </Link>
 
                     </div>
 
 
-                    {/* Back Home */}
+                    {/* =================================================
+                        BACK HOME
+                    ================================================= */}
+
                     <Link
                         to="/"
                         className="auth-back-home"
                     >
+
                         <i className="bi bi-arrow-left"></i>
+
                         Back to BookingX
+
                     </Link>
 
                 </div>
@@ -336,4 +430,3 @@ function Login() {
 }
 
 export default Login;
-
