@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { authenticatedFetch } from "../services/api";
+import {
+    getBookings,
+    cancelBooking as cancelBookingRequest,
+} from "../services/api";
 import "./MyBookings.css";
 
 function MyBookings() {
@@ -27,52 +30,36 @@ function MyBookings() {
         try {
             setLoading(true);
 
-            const response = await authenticatedFetch(
-                "http://127.0.0.1:8000/api/bookings/",
-                {
-                    method: "GET",
-                }
-            );
+            const data = await getBookings();
 
-            const data = await response.json();
-
-            if (response.status === 401) {
-                console.error(
-                    "Authentication failed. Refresh token may have expired."
-                );
-
-                setSessionExpired(true);
-                setBookings([]);
-
-                return;
-            }
-
-            if (response.ok) {
-                if (Array.isArray(data)) {
-                    setBookings(data);
-                } else {
-                    console.error(
-                        "Unexpected bookings response:",
-                        data
-                    );
-
-                    setBookings([]);
-                }
+            if (Array.isArray(data)) {
+                setBookings(data);
             } else {
                 console.error(
-                    "Failed to load bookings:",
+                    "Unexpected bookings response:",
                     data
                 );
 
                 setBookings([]);
             }
+
         } catch (error) {
             console.error(
                 "Error loading bookings:",
                 error
             );
 
-            setBookings([]);
+            if (error?.status === 401) {
+                console.error(
+                    "Authentication failed. Refresh token may have expired."
+                );
+
+                setSessionExpired(true);
+                setBookings([]);
+            } else {
+                setBookings([]);
+            }
+
         } finally {
             setLoading(false);
         }
@@ -102,16 +89,21 @@ function MyBookings() {
         setCancelMessage("");
 
         try {
-            const response = await authenticatedFetch(
-                `http://127.0.0.1:8000/api/bookings/${id}/cancel/`,
-                {
-                    method: "PATCH",
-                }
+            const data =
+                await cancelBookingRequest(id);
+
+            setBookingToCancel(null);
+            setCancelMessage("");
+
+            await loadBookings();
+
+        } catch (error) {
+            console.error(
+                "Cancellation error:",
+                error
             );
 
-            const data = await response.json();
-
-            if (response.status === 401) {
+            if (error?.status === 401) {
                 setSessionExpired(true);
 
                 setCancelMessage(
@@ -121,32 +113,13 @@ function MyBookings() {
                 return;
             }
 
-            if (response.ok) {
-                setBookingToCancel(null);
-                setCancelMessage("");
-
-                await loadBookings();
-            } else {
-                console.error(
-                    "Cancellation failed:",
-                    data
-                );
-
-                setCancelMessage(
-                    data.detail ||
-                    data.message ||
-                    data.error ||
-                    "Unable to cancel booking."
-                );
-            }
-        } catch (error) {
-            console.error(
-                "Cancellation error:",
-                error
-            );
+            const errorData = error?.data;
 
             setCancelMessage(
-                "Unable to connect to the server. Please try again."
+                errorData?.detail ||
+                errorData?.message ||
+                errorData?.error ||
+                "Unable to cancel booking."
             );
         } finally {
             setCancellingId(null);
@@ -207,6 +180,7 @@ function MyBookings() {
             <div className="bookings-page">
                 <div className="bookings-container">
                     <div className="bookings-empty">
+
                         <div className="empty-icon">
                             <i className="bi bi-shield-lock"></i>
                         </div>
@@ -219,6 +193,7 @@ function MyBookings() {
                             Please log in again to view and manage
                             your bookings.
                         </p>
+
                     </div>
                 </div>
             </div>
@@ -229,13 +204,15 @@ function MyBookings() {
     // NOT LOGGED IN
     // =========================================================
 
-    const refreshToken = localStorage.getItem("refresh_token");
+    const refreshToken =
+        localStorage.getItem("refresh_token");
 
     if (!refreshToken) {
         return (
             <div className="bookings-page">
                 <div className="bookings-container">
                     <div className="bookings-empty">
+
                         <div className="empty-icon">
                             <i className="bi bi-person-lock"></i>
                         </div>
@@ -248,6 +225,7 @@ function MyBookings() {
                             Please login to view and manage your
                             bookings.
                         </p>
+
                     </div>
                 </div>
             </div>
@@ -262,7 +240,9 @@ function MyBookings() {
         return (
             <div className="bookings-page">
                 <div className="bookings-container">
+
                     <div className="bookings-loading">
+
                         <div className="spinner"></div>
 
                         <h3>
@@ -272,7 +252,9 @@ function MyBookings() {
                         <p>
                             Please wait a moment.
                         </p>
+
                     </div>
+
                 </div>
             </div>
         );
@@ -294,6 +276,7 @@ function MyBookings() {
                 <div className="bookings-header">
 
                     <div>
+
                         <span className="bookings-label">
                             <i className="bi bi-calendar-check"></i>
                             YOUR TRIPS
@@ -307,9 +290,11 @@ function MyBookings() {
                             Manage your hotel reservations and view
                             your booking details.
                         </p>
+
                     </div>
 
                     <div className="booking-count">
+
                         <span>
                             {bookings.length}
                         </span>
@@ -319,6 +304,7 @@ function MyBookings() {
                                 ? "Booking"
                                 : "Bookings"}
                         </small>
+
                     </div>
 
                 </div>
@@ -388,6 +374,7 @@ function MyBookings() {
                                             </div>
 
                                             <div>
+
                                                 <span>
                                                     BOOKING REFERENCE
                                                 </span>
@@ -395,6 +382,7 @@ function MyBookings() {
                                                 <strong>
                                                     {booking.booking_reference}
                                                 </strong>
+
                                             </div>
 
                                         </div>
@@ -543,6 +531,7 @@ function MyBookings() {
                                             </div>
 
                                             <div>
+
                                                 <span>
                                                     Guests
                                                 </span>
@@ -550,6 +539,7 @@ function MyBookings() {
                                                 <strong>
                                                     {booking.guests}
                                                 </strong>
+
                                             </div>
 
                                         </div>
@@ -562,6 +552,7 @@ function MyBookings() {
                                             </div>
 
                                             <div>
+
                                                 <span>
                                                     Total price
                                                 </span>
@@ -569,6 +560,7 @@ function MyBookings() {
                                                 <strong>
                                                     ₹{booking.total_price}
                                                 </strong>
+
                                             </div>
 
                                         </div>

@@ -274,12 +274,7 @@ export async function getRoomsByHotel(
     hotelId
 ) {
 
-    // -----------------------------------------------------
-    // Prevent an invalid request such as:
-    //
-    // /rooms/?hotel=undefined
-    // -----------------------------------------------------
-
+    // Prevent invalid requests
     if (
         hotelId === undefined ||
         hotelId === null ||
@@ -417,6 +412,38 @@ export async function loginUser(
 
 
 // =========================================================
+// USER PROFILE
+// =========================================================
+
+export async function getUserProfile() {
+
+    const response =
+        await authenticatedFetch(
+            `${API_BASE_URL}/auth/profile/`,
+            {
+                method: "GET",
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw {
+            status: response.status,
+            data: data,
+        };
+    }
+
+
+    return data;
+}
+
+
+// =========================================================
 // BOOKINGS
 // =========================================================
 
@@ -480,3 +507,4 @@ export async function cancelBooking(
 
     return data;
 }
+

@@ -1,8 +1,15 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from .models import UserProfile
+
+
+# =========================================================
+# USER REGISTRATION
+# =========================================================
 
 class RegisterSerializer(serializers.ModelSerializer):
+
     password = serializers.CharField(
         write_only=True,
         min_length=8
@@ -22,17 +29,24 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def validate(self, data):
+
         if data["password"] != data["password2"]:
             raise serializers.ValidationError(
                 {"password": "Passwords do not match."}
             )
 
-        if User.objects.filter(username=data["username"]).exists():
+        if User.objects.filter(
+            username=data["username"]
+        ).exists():
+
             raise serializers.ValidationError(
                 {"username": "Username already exists."}
             )
 
-        if User.objects.filter(email=data["email"]).exists():
+        if User.objects.filter(
+            email=data["email"]
+        ).exists():
+
             raise serializers.ValidationError(
                 {"email": "Email already exists."}
             )
@@ -40,6 +54,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
+
         validated_data.pop("password2")
 
         user = User.objects.create_user(
@@ -50,4 +65,47 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         return user
 
-    
+
+# =========================================================
+# USER PROFILE
+# =========================================================
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.CharField(
+        source="user.first_name"
+    )
+
+    last_name = serializers.CharField(
+        source="user.last_name"
+    )
+
+    username = serializers.CharField(
+        source="user.username"
+    )
+
+    email = serializers.EmailField(
+        source="user.email"
+    )
+
+    profile_image = serializers.ImageField(
+        required=False,
+        allow_null=True
+    )
+
+    class Meta:
+        model = UserProfile
+
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "username",
+            "email",
+            "profile_image",
+        ]
+
+        read_only_fields = [
+            "id",
+        ]
+        

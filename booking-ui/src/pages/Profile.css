@@ -1,0 +1,557 @@
+/* =========================================================
+   PROFILE PAGE
+========================================================= */
+
+.profile-page {
+    min-height: calc(100vh - 80px);
+    background: #f7f9fc;
+    padding: 60px 20px 80px;
+}
+
+.profile-container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.profile-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #6c63ff;
+    margin-bottom: 12px;
+}
+
+.profile-label i {
+    font-size: 16px;
+}
+
+.profile-header h1 {
+    margin: 0 0 12px;
+    font-size: 42px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.profile-header p {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.7;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   PROFILE CARD
+========================================================= */
+
+.profile-card {
+    background: #ffffff;
+    border: 1px solid #e8ebf0;
+    border-radius: 20px;
+    box-shadow: 0 10px 35px rgba(31, 41, 55, 0.07);
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   PROFILE CARD HEADER
+========================================================= */
+
+.profile-card-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 35px 40px;
+    border-bottom: 1px solid #edf0f4;
+}
+
+
+/* =========================================================
+   PROFILE AVATAR
+========================================================= */
+
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    overflow: hidden;
+
+    background: #f0efff;
+    color: #6c63ff;
+    font-size: 38px;
+
+    border: 3px solid #ffffff;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, 0.12);
+}
+
+
+/* Actual profile image */
+
+.profile-avatar img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center;
+
+    border-radius: 50%;
+}
+
+
+.profile-user-heading span {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #9ca3af;
+}
+
+.profile-user-heading h2 {
+    margin: 0 0 5px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.profile-user-heading p {
+    margin: 0;
+    font-size: 15px;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   PROFILE INFORMATION
+========================================================= */
+
+.profile-information {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 35px 40px;
+}
+
+.profile-info-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    padding: 20px;
+
+    background: #fafbfc;
+    border: 1px solid #edf0f4;
+    border-radius: 14px;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(31, 41, 55, 0.06);
+}
+
+.profile-info-icon {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+    background: #f0efff;
+    color: #6c63ff;
+    font-size: 20px;
+}
+
+.profile-info-content {
+    min-width: 0;
+}
+
+.profile-info-content span {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #9ca3af;
+}
+
+.profile-info-content strong {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f2937;
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================================================
+   PROFILE CARD FOOTER
+========================================================= */
+
+.profile-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 25px 40px;
+
+    background: #fafbfc;
+    border-top: 1px solid #edf0f4;
+}
+
+.profile-footer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.profile-footer-info i {
+    flex-shrink: 0;
+    color: #22a06b;
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   MY BOOKINGS BUTTON
+========================================================= */
+
+.profile-bookings-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 48px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #6c63ff;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.profile-bookings-button:hover {
+    background: #5b52e6;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(108, 99, 255, 0.25);
+}
+
+.profile-bookings-button i:last-child {
+    margin-left: 4px;
+    transition: transform 0.2s ease;
+}
+
+.profile-bookings-button:hover i:last-child {
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.profile-loading {
+    min-height: 450px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background: #ffffff;
+    border: 1px solid #e8ebf0;
+    border-radius: 20px;
+
+    box-shadow: 0 10px 35px rgba(31, 41, 55, 0.06);
+}
+
+.profile-spinner {
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 20px;
+
+    border: 4px solid #e8ebf0;
+    border-top-color: #6c63ff;
+    border-radius: 50%;
+
+    animation: profileSpin 0.8s linear infinite;
+}
+
+@keyframes profileSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.profile-loading h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: #1f2937;
+}
+
+.profile-loading p {
+    margin: 0;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   ERROR STATE
+========================================================= */
+
+.profile-error {
+    min-height: 450px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+    padding: 40px;
+
+    background: #ffffff;
+    border: 1px solid #e8ebf0;
+    border-radius: 20px;
+
+    box-shadow: 0 10px 35px rgba(31, 41, 55, 0.06);
+}
+
+.profile-error-icon {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 20px;
+
+    border-radius: 50%;
+
+    background: #fff1f2;
+    color: #dc3545;
+
+    font-size: 30px;
+}
+
+.profile-error h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    color: #1f2937;
+}
+
+.profile-error p {
+    max-width: 500px;
+    margin: 0 0 25px;
+
+    color: #6b7280;
+    line-height: 1.6;
+}
+
+.profile-login-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 46px;
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #6c63ff;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+.profile-login-button:hover {
+    background: #5b52e6;
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .profile-page {
+        padding: 50px 18px 70px;
+    }
+
+    .profile-header h1 {
+        font-size: 36px;
+    }
+
+    .profile-information {
+        grid-template-columns: 1fr;
+        padding: 30px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .profile-page {
+        padding: 35px 15px 50px;
+    }
+
+    .profile-header {
+        margin-bottom: 28px;
+    }
+
+    .profile-header h1 {
+        font-size: 30px;
+    }
+
+    .profile-header p {
+        font-size: 14px;
+    }
+
+    .profile-card {
+        border-radius: 16px;
+    }
+
+    .profile-card-header {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 20px;
+    }
+
+    .profile-avatar {
+        width: 78px;
+        height: 78px;
+        font-size: 32px;
+    }
+
+    .profile-user-heading h2 {
+        font-size: 23px;
+    }
+
+    .profile-information {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .profile-info-item {
+        padding: 16px;
+    }
+
+    .profile-card-footer {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 22px 20px;
+    }
+
+    .profile-footer-info {
+        align-items: flex-start;
+    }
+
+    .profile-bookings-button {
+        width: 100%;
+    }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 400px) {
+
+    .profile-header h1 {
+        font-size: 27px;
+    }
+
+    .profile-label {
+        font-size: 11px;
+    }
+
+    .profile-card-header {
+        padding: 25px 15px;
+    }
+
+    .profile-information {
+        padding: 15px;
+    }
+
+    .profile-info-item {
+        gap: 12px;
+    }
+
+    .profile-info-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 18px;
+    }
+
+    .profile-avatar {
+        width: 72px;
+        height: 72px;
+    }
+}
+
