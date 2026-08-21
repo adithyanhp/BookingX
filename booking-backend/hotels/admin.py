@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin
 
 from .models import Hotel, Room, Booking
 
@@ -65,6 +67,46 @@ class RoomAdmin(admin.ModelAdmin):
 
 
 # =========================================================
+# USER BOOKING FILTER
+# =========================================================
+
+class UserBookingFilter(admin.SimpleListFilter):
+
+    title = "User"
+
+    parameter_name = "user"
+
+    def lookups(self, request, model_admin):
+
+        users = (
+            User.objects
+            .filter(
+                bookings__isnull=False
+            )
+            .distinct()
+            .order_by("username")
+        )
+
+        return [
+            (
+                user.id,
+                user.username
+            )
+            for user in users
+        ]
+
+    def queryset(self, request, queryset):
+
+        if self.value():
+
+            return queryset.filter(
+                user_id=self.value()
+            )
+
+        return queryset
+
+
+# =========================================================
 # BOOKING ADMIN
 # =========================================================
 
@@ -74,6 +116,7 @@ class BookingAdmin(admin.ModelAdmin):
     list_display = (
         "booking_reference",
         "user",
+        "get_hotel",
         "room",
         "check_in",
         "check_out",
@@ -84,14 +127,17 @@ class BookingAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        UserBookingFilter,
         "status",
         "check_in",
         "check_out",
+        "room__hotel",
     )
 
     search_fields = (
         "booking_reference",
         "user__username",
+        "user__email",
         "room__name",
         "room__hotel__name",
     )
@@ -102,4 +148,79 @@ class BookingAdmin(admin.ModelAdmin):
         "updated_at",
     )
 
-    
+    ordering = (
+        "-created_at",
+    )
+
+    # ---------------------------------------------------------
+    # HOTEL BOOKED
+    # ---------------------------------------------------------
+
+    @admin.display(
+        description="Hotel",
+        ordering="room__hotel__name"
+    )
+    def get_hotel(self, obj):
+
+        return obj.room.hotel.name
+
+
+# =========================================================
+# USER ADMIN
+# =========================================================
+
+class CustomUserAdmin(UserAdmin):
+
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "get_booking_count",
+        "is_staff",
+        "is_active",
+        "date_joined",
+    )
+
+    search_fields = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+    )
+
+    list_filter = (
+        "is_staff",
+        "is_superuser",
+        "is_active",
+        "date_joined",
+    )
+
+    ordering = (
+        "-date_joined",
+    )
+
+    # ---------------------------------------------------------
+    # NUMBER OF BOOKINGS
+    # ---------------------------------------------------------
+
+    @admin.display(
+        description="Bookings",
+        ordering="bookings__count"
+    )
+    def get_booking_count(self, obj):
+
+        return obj.bookings.count()
+
+
+# =========================================================
+# REGISTER CUSTOM USER ADMIN
+# =========================================================
+
+admin.site.unregister(User)
+
+admin.site.register(
+    User,
+    CustomUserAdmin
+)
+
