@@ -23,6 +23,7 @@ function Profile() {
                 const data = await getUserProfile();
 
                 setProfile(data);
+
             } catch (error) {
                 console.error(
                     "Failed to load profile:",
@@ -38,6 +39,7 @@ function Profile() {
                         "Unable to load your profile. Please try again."
                     );
                 }
+
             } finally {
                 setLoading(false);
             }
@@ -53,8 +55,11 @@ function Profile() {
     if (loading) {
         return (
             <div className="profile-page">
+
                 <div className="profile-container">
+
                     <div className="profile-loading">
+
                         <div className="profile-spinner"></div>
 
                         <h3>
@@ -64,8 +69,11 @@ function Profile() {
                         <p>
                             Please wait a moment.
                         </p>
+
                     </div>
+
                 </div>
+
             </div>
         );
     }
@@ -77,8 +85,11 @@ function Profile() {
     if (error) {
         return (
             <div className="profile-page">
+
                 <div className="profile-container">
+
                     <div className="profile-error">
+
                         <div className="profile-error-icon">
                             <i className="bi bi-person-x"></i>
                         </div>
@@ -99,8 +110,11 @@ function Profile() {
 
                             Login Again
                         </button>
+
                     </div>
+
                 </div>
+
             </div>
         );
     }
@@ -109,7 +123,8 @@ function Profile() {
     // PROFILE IMAGE
     // =========================================================
 
-    const profileImage = profile?.profile_image || null;
+    const profileImage =
+        profile?.profile_image || null;
 
     // =========================================================
     // DISPLAY NAME
@@ -136,8 +151,11 @@ function Profile() {
                 <div className="profile-header">
 
                     <span className="profile-label">
+
                         <i className="bi bi-person-circle"></i>
+
                         ACCOUNT
+
                     </span>
 
                     <h1>
@@ -160,7 +178,7 @@ function Profile() {
 
 
                     {/* =================================================
-                        PROFILE HEADER
+                        PROFILE CARD HEADER
                     ================================================= */}
 
                     <div className="profile-card-header">
@@ -171,13 +189,17 @@ function Profile() {
                         <div className="profile-avatar">
 
                             {profileImage ? (
+
                                 <img
                                     src={profileImage}
                                     alt={`${profile?.username || "User"} profile`}
                                     className="profile-avatar-image"
                                 />
+
                             ) : (
+
                                 <i className="bi bi-person-fill"></i>
+
                             )}
 
                         </div>
@@ -323,6 +345,9 @@ function Profile() {
 
                     <div className="profile-card-footer">
 
+
+                        {/* FOOTER INFORMATION */}
+
                         <div className="profile-footer-info">
 
                             <i className="bi bi-shield-check"></i>
@@ -335,20 +360,49 @@ function Profile() {
                         </div>
 
 
-                        {/* MY BOOKINGS */}
+                        {/* =================================================
+                            PROFILE ACTIONS
+                        ================================================= */}
 
-                        <button
-                            className="profile-bookings-button"
-                            onClick={() => navigate("/bookings")}
-                        >
+                        <div className="profile-actions">
 
-                            <i className="bi bi-calendar-check"></i>
 
-                            My Bookings
+                            {/* EDIT PROFILE */}
 
-                            <i className="bi bi-arrow-right"></i>
+                            <button
+                                className="profile-action-button profile-edit-button"
+                                onClick={() =>
+                                    navigate("/edit-profile")
+                                }
+                            >
 
-                        </button>
+                                <i className="bi bi-pencil-square"></i>
+
+                                Edit Profile
+
+                                <i className="bi bi-arrow-right"></i>
+
+                            </button>
+
+
+                            {/* MY BOOKINGS */}
+
+                            <button
+                                className="profile-action-button profile-bookings-button"
+                                onClick={() =>
+                                    navigate("/bookings")
+                                }
+                            >
+
+                                <i className="bi bi-calendar-check"></i>
+
+                                My Bookings
+
+                                <i className="bi bi-arrow-right"></i>
+
+                            </button>
+
+                        </div>
 
                     </div>
 

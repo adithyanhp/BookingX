@@ -4,6 +4,8 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import Hotel, Room, Booking
 
+from accounts.models import PasswordChangeLog
+
 
 # =========================================================
 # HOTEL ADMIN
@@ -113,6 +115,10 @@ class UserBookingFilter(admin.SimpleListFilter):
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
 
+    # =====================================================
+    # BOOKING LIST
+    # =====================================================
+
     list_display = (
         "booking_reference",
         "user",
@@ -146,15 +152,100 @@ class BookingAdmin(admin.ModelAdmin):
         "booking_reference",
         "created_at",
         "updated_at",
+        "get_hotel",
+        "get_room_type",
+        "get_room_price",
+        "get_number_of_nights",
     )
 
     ordering = (
         "-created_at",
     )
 
-    # ---------------------------------------------------------
-    # HOTEL BOOKED
-    # ---------------------------------------------------------
+    # =====================================================
+    # BOOKING DETAIL PAGE
+    # =====================================================
+
+    fieldsets = (
+
+        # -------------------------------------------------
+        # BOOKING INFORMATION
+        # -------------------------------------------------
+
+        (
+            "Booking Information",
+            {
+                "fields": (
+                    "booking_reference",
+                    "status",
+                    "created_at",
+                    "updated_at",
+                )
+            }
+        ),
+
+        # -------------------------------------------------
+        # CUSTOMER
+        # -------------------------------------------------
+
+        (
+            "Customer",
+            {
+                "fields": (
+                    "user",
+                )
+            }
+        ),
+
+        # -------------------------------------------------
+        # HOTEL & ROOM
+        # -------------------------------------------------
+
+        (
+            "Hotel & Room",
+            {
+                "fields": (
+                    "get_hotel",
+                    "room",
+                    "get_room_type",
+                    "get_room_price",
+                )
+            }
+        ),
+
+        # -------------------------------------------------
+        # STAY DETAILS
+        # -------------------------------------------------
+
+        (
+            "Stay Details",
+            {
+                "fields": (
+                    "check_in",
+                    "check_out",
+                    "get_number_of_nights",
+                    "guests",
+                )
+            }
+        ),
+
+        # -------------------------------------------------
+        # PAYMENT
+        # -------------------------------------------------
+
+        (
+            "Payment",
+            {
+                "fields": (
+                    "total_price",
+                )
+            }
+        ),
+    )
+
+    # =====================================================
+    # HOTEL
+    # =====================================================
 
     @admin.display(
         description="Hotel",
@@ -163,6 +254,41 @@ class BookingAdmin(admin.ModelAdmin):
     def get_hotel(self, obj):
 
         return obj.room.hotel.name
+
+    # =====================================================
+    # ROOM TYPE
+    # =====================================================
+
+    @admin.display(
+        description="Room Type",
+        ordering="room__room_type"
+    )
+    def get_room_type(self, obj):
+
+        return obj.room.get_room_type_display()
+
+    # =====================================================
+    # ROOM PRICE
+    # =====================================================
+
+    @admin.display(
+        description="Price / Night",
+        ordering="room__price_per_night"
+    )
+    def get_room_price(self, obj):
+
+        return f"₹{obj.room.price_per_night}"
+
+    # =====================================================
+    # NUMBER OF NIGHTS
+    # =====================================================
+
+    @admin.display(
+        description="Number of Nights"
+    )
+    def get_number_of_nights(self, obj):
+
+        return obj.nights
 
 
 # =========================================================
@@ -200,9 +326,9 @@ class CustomUserAdmin(UserAdmin):
         "-date_joined",
     )
 
-    # ---------------------------------------------------------
+    # =====================================================
     # NUMBER OF BOOKINGS
-    # ---------------------------------------------------------
+    # =====================================================
 
     @admin.display(
         description="Bookings",
@@ -212,9 +338,58 @@ class CustomUserAdmin(UserAdmin):
 
         return obj.bookings.count()
 
+    # =====================================================
+    # ADMIN PASSWORD CHANGE AUDIT
+    # =====================================================
+
+    def user_change_password(
+        self,
+        request,
+        id,
+        form_url=""
+    ):
+        """
+        Use Django's normal UserAdmin password-change flow.
+
+        After Django successfully changes the password,
+        create a PasswordChangeLog entry identifying the
+        administrator who performed the change.
+        """
+
+        response = super().user_change_password(
+            request,
+            id,
+            form_url
+        )
+
+        # -------------------------------------------------
+        # Django returns a redirect after a successful
+        # password change.
+        # -------------------------------------------------
+
+        if (
+            request.method == "POST"
+            and response.status_code == 302
+        ):
+
+            user = self.get_object(
+                request,
+                id
+            )
+
+            if user is not None:
+
+                PasswordChangeLog.objects.create(
+                    user=user,
+                    changed_by=request.user,
+                    change_type="ADMIN",
+                )
+
+        return response
+
 
 # =========================================================
-# REGISTER CUSTOM USER ADMIN
+# REPLACE DEFAULT USER ADMIN
 # =========================================================
 
 admin.site.unregister(User)

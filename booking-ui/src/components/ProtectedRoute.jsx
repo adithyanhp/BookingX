@@ -1,6 +1,10 @@
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+
 
 function ProtectedRoute() {
+
+    const location = useLocation();
+
 
     const accessToken =
         localStorage.getItem("access_token");
@@ -14,10 +18,14 @@ function ProtectedRoute() {
     // =========================================================
 
     if (!accessToken || !refreshToken) {
+
         return (
             <Navigate
                 to="/login"
                 replace
+                state={{
+                    from: location,
+                }}
             />
         );
     }
@@ -29,6 +37,7 @@ function ProtectedRoute() {
 
     return <Outlet />;
 }
+
 
 export default ProtectedRoute;
 
