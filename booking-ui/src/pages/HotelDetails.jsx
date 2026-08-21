@@ -25,14 +25,33 @@ function HotelDetails() {
         setHotel(hotelData);
 
         // Supports both normal arrays and DRF paginated responses
-        setRooms(
-          Array.isArray(roomData)
-            ? roomData
-            : roomData.results || []
+        const fetchedRooms = Array.isArray(roomData)
+          ? roomData
+          : roomData.results || [];
+
+        // -------------------------------------------------
+        // SAFETY CHECK
+        //
+        // Only keep rooms belonging to the currently
+        // opened hotel.
+        // -------------------------------------------------
+
+        const hotelRooms = fetchedRooms.filter(
+          (room) =>
+            String(room.hotel) === String(hotelData.id)
         );
+
+        setRooms(hotelRooms);
+
       } catch (error) {
-        console.error("Failed to load hotel details:", error);
-        setError("Unable to load hotel details. Please try again.");
+        console.error(
+          "Failed to load hotel details:",
+          error
+        );
+
+        setError(
+          "Unable to load hotel details. Please try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -40,6 +59,15 @@ function HotelDetails() {
 
     loadHotelDetails();
   }, [id]);
+
+
+  // =========================================================
+  // HOTEL IMAGE
+  // =========================================================
+
+  const hotelImage =
+    hotel?.image || "/hotel.jpg";
+
 
   /* =========================
      LOADING
@@ -49,20 +77,29 @@ function HotelDetails() {
     return (
       <div className="hotel-details-page">
         <div className="container py-5">
+
           <div className="hotel-loading">
+
             <div
               className="spinner-border text-primary"
               role="status"
             ></div>
 
-            <h4>Loading hotel details...</h4>
+            <h4>
+              Loading hotel details...
+            </h4>
 
-            <p>Please wait a moment.</p>
+            <p>
+              Please wait a moment.
+            </p>
+
           </div>
+
         </div>
       </div>
     );
   }
+
 
   /* =========================
      ERROR
@@ -71,26 +108,38 @@ function HotelDetails() {
   if (error || !hotel) {
     return (
       <div className="hotel-details-page">
+
         <div className="container py-5">
+
           <div className="hotel-error">
+
             <i className="bi bi-exclamation-circle"></i>
 
-            <h2>Hotel not found</h2>
+            <h2>
+              Hotel not found
+            </h2>
 
             <p>
               {error ||
                 "The hotel you're looking for could not be found."}
             </p>
 
-            <Link to="/" className="btn btn-primary">
+            <Link
+              to="/"
+              className="btn btn-primary"
+            >
               <i className="bi bi-arrow-left"></i>
               Back to Hotels
             </Link>
+
           </div>
+
         </div>
+
       </div>
     );
   }
+
 
   return (
     <div className="hotel-details-page">
@@ -100,6 +149,7 @@ function HotelDetails() {
       ========================= */}
 
       <div className="container">
+
         <div className="hotel-breadcrumb">
 
           <Link to="/">
@@ -109,13 +159,18 @@ function HotelDetails() {
 
           <i className="bi bi-chevron-right"></i>
 
-          <span>Hotels</span>
+          <span>
+            Hotels
+          </span>
 
           <i className="bi bi-chevron-right"></i>
 
-          <span>{hotel.name}</span>
+          <span>
+            {hotel.name}
+          </span>
 
         </div>
+
       </div>
 
 
@@ -130,8 +185,11 @@ function HotelDetails() {
           <div className="hotel-detail-image">
 
             <img
-              src="/hotel.jpg"
+              src={hotelImage}
               alt={hotel.name}
+              onError={(event) => {
+                event.currentTarget.src = "/hotel.jpg";
+              }}
             />
 
             <div className="hotel-image-overlay"></div>
@@ -139,17 +197,25 @@ function HotelDetails() {
             <div className="hotel-hero-content">
 
               <div className="hotel-star-badge">
+
                 <i className="bi bi-star-fill"></i>
+
                 {hotel.star_rating} Star Hotel
+
               </div>
 
-              <h1>{hotel.name}</h1>
+              <h1>
+                {hotel.name}
+              </h1>
 
               <p>
+
                 <i className="bi bi-geo-alt-fill"></i>
 
-                {hotel.address}, {hotel.city},{" "}
+                {hotel.address},{" "}
+                {hotel.city},{" "}
                 {hotel.country}
+
               </p>
 
             </div>
@@ -159,7 +225,9 @@ function HotelDetails() {
               type="button"
               aria-label="Add hotel to favorites"
             >
+
               <i className="bi bi-heart"></i>
+
             </button>
 
           </div>
@@ -185,7 +253,9 @@ function HotelDetails() {
 
             <div className="col-lg-8">
 
-              {/* ABOUT HOTEL */}
+              {/* =========================
+                  ABOUT HOTEL
+              ========================= */}
 
               <div className="hotel-info-card">
 
@@ -197,7 +267,9 @@ function HotelDetails() {
                       ABOUT THE HOTEL
                     </span>
 
-                    <h2>{hotel.name}</h2>
+                    <h2>
+                      {hotel.name}
+                    </h2>
 
                   </div>
 
@@ -209,7 +281,9 @@ function HotelDetails() {
                       {hotel.star_rating}
                     </strong>
 
-                    <span>/ 5</span>
+                    <span>
+                      / 5
+                    </span>
 
                   </div>
 
@@ -224,7 +298,9 @@ function HotelDetails() {
                 </p>
 
 
-                {/* HOTEL HIGHLIGHTS */}
+                {/* =========================
+                    HOTEL HIGHLIGHTS
+                ========================= */}
 
                 <div className="hotel-highlights">
 
@@ -235,8 +311,15 @@ function HotelDetails() {
                     </div>
 
                     <div>
-                      <strong>Great Location</strong>
-                      <span>{hotel.city}</span>
+
+                      <strong>
+                        Great Location
+                      </strong>
+
+                      <span>
+                        {hotel.city}
+                      </span>
+
                     </div>
 
                   </div>
@@ -249,11 +332,15 @@ function HotelDetails() {
                     </div>
 
                     <div>
-                      <strong>Highly Rated</strong>
+
+                      <strong>
+                        Highly Rated
+                      </strong>
 
                       <span>
                         {hotel.star_rating} Star Hotel
                       </span>
+
                     </div>
 
                   </div>
@@ -266,11 +353,15 @@ function HotelDetails() {
                     </div>
 
                     <div>
-                      <strong>Secure Booking</strong>
+
+                      <strong>
+                        Secure Booking
+                      </strong>
 
                       <span>
                         Easy & reliable
                       </span>
+
                     </div>
 
                   </div>
@@ -297,7 +388,9 @@ function HotelDetails() {
                       ACCOMMODATION
                     </span>
 
-                    <h2>Choose Your Room</h2>
+                    <h2>
+                      Choose Your Room
+                    </h2>
 
                   </div>
 
@@ -324,7 +417,9 @@ function HotelDetails() {
 
                     </div>
 
-                    <h3>No rooms available</h3>
+                    <h3>
+                      No rooms available
+                    </h3>
 
                     <p>
                       There are currently no rooms
@@ -344,27 +439,60 @@ function HotelDetails() {
                         key={room.id}
                       >
 
-                        {/* ROOM IMAGE */}
+                        {/* =========================
+                            ROOM IMAGE
+                        ========================= */}
 
                         <div className="room-image">
 
                           <img
-                            src="/hotel-room.jpg"
+                            src={
+                              room.image ||
+                              hotel.image ||
+                              "/hotel-room.jpg"
+                            }
                             alt={room.name}
+                            onError={(event) => {
+
+                              // First fallback:
+                              // hotel image
+
+                              if (
+                                hotel.image &&
+                                event.currentTarget.src !==
+                                  hotel.image
+                              ) {
+                                event.currentTarget.src =
+                                  hotel.image;
+                                return;
+                              }
+
+                              // Final fallback
+
+                              event.currentTarget.src =
+                                "/hotel-room.jpg";
+                            }}
                           />
 
                           <span className="room-type-badge">
 
                             <i className="bi bi-house"></i>
 
-                            Room
+                            {room.room_type
+                              ? room.room_type
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                room.room_type.slice(1)
+                              : "Room"}
 
                           </span>
 
                         </div>
 
 
-                        {/* ROOM CONTENT */}
+                        {/* =========================
+                            ROOM CONTENT
+                        ========================= */}
 
                         <div className="room-content">
 
@@ -388,7 +516,9 @@ function HotelDetails() {
                           </div>
 
 
-                          {/* ROOM FEATURES */}
+                          {/* =========================
+                              ROOM FEATURES
+                          ========================= */}
 
                           <div className="room-features">
 
@@ -426,7 +556,9 @@ function HotelDetails() {
                           </div>
 
 
-                          {/* ROOM PRICE + BOOK */}
+                          {/* =========================
+                              ROOM PRICE + BOOK
+                          ========================= */}
 
                           <div className="room-bottom">
 
@@ -438,9 +570,7 @@ function HotelDetails() {
 
                               <strong>
                                 ₹
-                                {
-                                  room.price_per_night
-                                }
+                                {room.price_per_night}
                               </strong>
 
                               <span>
@@ -486,7 +616,9 @@ function HotelDetails() {
 
               <div className="hotel-sidebar">
 
-                {/* PRICE CARD */}
+                {/* =========================
+                    PRICE CARD
+                ========================= */}
 
                 <div className="price-card">
 
@@ -525,7 +657,9 @@ function HotelDetails() {
                 </div>
 
 
-                {/* WHY BOOK */}
+                {/* =========================
+                    WHY BOOK
+                ========================= */}
 
                 <div className="why-book-card">
 
@@ -588,7 +722,9 @@ function HotelDetails() {
                 </div>
 
 
-                {/* LOCATION */}
+                {/* =========================
+                    LOCATION
+                ========================= */}
 
                 <div className="location-card">
 
@@ -600,7 +736,9 @@ function HotelDetails() {
 
                   <div>
 
-                    <h4>Location</h4>
+                    <h4>
+                      Location
+                    </h4>
 
                     <p>
 
@@ -632,3 +770,4 @@ function HotelDetails() {
 }
 
 export default HotelDetails;
+

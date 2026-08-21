@@ -76,6 +76,12 @@ class Hotel(models.Model):
         default=True
     )
 
+    # Allows admin to control whether this hotel
+    # appears in the Featured Hotels section
+    is_featured = models.BooleanField(
+        default=False
+    )
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -100,6 +106,7 @@ class Room(models.Model):
         ("suite", "Suite"),
     ]
 
+    # Each room belongs to exactly one hotel
     hotel = models.ForeignKey(
         Hotel,
         on_delete=models.CASCADE,
@@ -117,6 +124,36 @@ class Room(models.Model):
 
     description = models.TextField(
         blank=True
+    )
+
+    # =====================================================
+    # ROOM IMAGE
+    # =====================================================
+
+    # Each room can have its own image.
+    #
+    # Example:
+    #
+    # Grand Horizon
+    #   ├── Standard Room → standard.jpg
+    #   ├── Deluxe Room   → deluxe.jpg
+    #   └── Suite         → suite.jpg
+    #
+    # Taj Malabar
+    #   ├── Standard Room → taj-standard.jpg
+    #   ├── Deluxe Room   → taj-deluxe.jpg
+    #   └── Suite         → taj-suite.jpg
+    #
+    # Images will be stored inside:
+    #
+    # media/rooms/
+    #
+    # =====================================================
+
+    image = models.ImageField(
+        upload_to="rooms/",
+        blank=True,
+        null=True
     )
 
     price_per_night = models.DecimalField(
@@ -140,8 +177,6 @@ class Room(models.Model):
     )
 
     # Administrative availability.
-    #
-    # This does NOT determine date-based availability.
     # Date-based availability is calculated from bookings.
     is_available = models.BooleanField(
         default=True
@@ -182,6 +217,9 @@ class Booking(models.Model):
         related_name="bookings"
     )
 
+    # Booking is made against a specific room.
+    # The hotel's identity is obtained through:
+    # booking.room.hotel
     room = models.ForeignKey(
         Room,
         on_delete=models.PROTECT,
@@ -236,7 +274,7 @@ class Booking(models.Model):
         Validate booking data before saving.
         """
 
-        # Check-in cannot be after check-out.
+        # Check-in cannot be after or equal to check-out.
         if self.check_in and self.check_out:
 
             if self.check_out <= self.check_in:

@@ -25,6 +25,26 @@ class HotelListCreateView(generics.ListCreateAPIView):
     serializer_class = HotelSerializer
 
 
+# =========================================================
+# FEATURED HOTELS API
+# =========================================================
+
+class FeaturedHotelListView(generics.ListAPIView):
+
+    serializer_class = HotelSerializer
+
+    def get_queryset(self):
+
+        return (
+            Hotel.objects
+            .filter(
+                is_active=True,
+                is_featured=True,
+            )
+            .order_by("price_from")
+        )
+
+
 class HotelDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Hotel.objects.all()
@@ -186,11 +206,6 @@ class HotelSearchView(generics.ListAPIView):
 
                 # -------------------------------------------------
                 # Check overlapping active bookings
-                #
-                # Existing: 1 Nov - 3 Nov
-                # New:      3 Nov - 5 Nov
-                #
-                # These DO NOT overlap.
                 # -------------------------------------------------
 
                 overlapping_booking_exists = (
@@ -242,13 +257,54 @@ class HotelSearchView(generics.ListAPIView):
 
 class RoomListCreateView(generics.ListCreateAPIView):
 
-    queryset = Room.objects.all()
     serializer_class = RoomSerializer
+
+    def get_queryset(self):
+
+        queryset = (
+            Room.objects
+            .select_related("hotel")
+            .filter(
+                is_active=True
+            )
+        )
+
+        # -------------------------------------------------
+        # Filter rooms by hotel when hotel ID is provided.
+        #
+        # Example:
+        #
+        # /api/rooms/?hotel=2
+        #
+        # This will return ONLY rooms belonging to Hotel 2.
+        # -------------------------------------------------
+
+        hotel_id = self.request.query_params.get("hotel")
+
+        if hotel_id:
+
+            try:
+
+                hotel_id = int(hotel_id)
+
+            except (TypeError, ValueError):
+
+                return Room.objects.none()
+
+            queryset = queryset.filter(
+                hotel_id=hotel_id
+            )
+
+        return queryset
 
 
 class RoomDetailView(generics.RetrieveUpdateDestroyAPIView):
 
-    queryset = Room.objects.all()
+    queryset = (
+        Room.objects
+        .select_related("hotel")
+    )
+
     serializer_class = RoomSerializer
 
 
@@ -321,9 +377,6 @@ class BookingListCreateView(
 
         # -------------------------------------------------
         # Get the room selected by the user.
-        #
-        # serializer.validated_data is already validated
-        # by BookingSerializer.
         # -------------------------------------------------
 
         room = serializer.validated_data["room"]
@@ -333,19 +386,12 @@ class BookingListCreateView(
 
         # -------------------------------------------------
         # Start database transaction.
-        #
-        # Everything inside this block succeeds together
-        # or is rolled back together.
         # -------------------------------------------------
 
         with transaction.atomic():
 
             # -------------------------------------------------
             # Lock this room row.
-            #
-            # If another booking request is simultaneously
-            # trying to book this same room, it must wait
-            # until this transaction finishes.
             # -------------------------------------------------
 
             locked_room = (
@@ -358,10 +404,7 @@ class BookingListCreateView(
             )
 
             # -------------------------------------------------
-            # Final room availability check
-            #
-            # This check happens AFTER the room has been
-            # locked.
+            # Final room availability check.
             # -------------------------------------------------
 
             if not locked_room.is_active:
@@ -379,7 +422,7 @@ class BookingListCreateView(
                 })
 
             # -------------------------------------------------
-            # Check hotel status
+            # Check hotel status.
             # -------------------------------------------------
 
             if not locked_room.hotel.is_active:
@@ -390,10 +433,7 @@ class BookingListCreateView(
                 })
 
             # -------------------------------------------------
-            # FINAL OVERLAP CHECK
-            #
-            # This is the important protection against
-            # simultaneous booking requests.
+            # Final overlap check.
             # -------------------------------------------------
 
             overlapping_booking_exists = (
@@ -418,14 +458,7 @@ class BookingListCreateView(
                 })
 
             # -------------------------------------------------
-            # Create the booking.
-            #
-            # BookingSerializer.create() will:
-            #
-            # - assign the current user
-            # - generate booking reference
-            # - set status to pending
-            # - calculate total price
+            # Create the booking using the locked room.
             # -------------------------------------------------
 
             serializer.save(
@@ -527,7 +560,6 @@ class BookingCancelView(
 
         if booking.check_out < today:
 
-            # Automatically correct status if needed.
             if booking.status != "completed":
 
                 booking.status = "completed"
@@ -563,7 +595,6 @@ class BookingCancelView(
 
         # -------------------------------------------------
         # Return updated booking
-        # Including hotel + room information
         # -------------------------------------------------
 
         serializer = self.get_serializer(booking)

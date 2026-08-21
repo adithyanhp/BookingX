@@ -24,9 +24,53 @@ class HotelSerializer(serializers.ModelSerializer):
 
 class RoomSerializer(serializers.ModelSerializer):
 
+    # -----------------------------------------------------
+    # HOTEL INFORMATION
+    #
+    # These fields help the frontend know exactly which
+    # hotel this room belongs to.
+    #
+    # They are read-only because the hotel relationship
+    # should be controlled by Django/admin.
+    # -----------------------------------------------------
+
+    hotel_name = serializers.CharField(
+        source="hotel.name",
+        read_only=True
+    )
+
     class Meta:
+
         model = Room
-        fields = "__all__"
+
+        fields = [
+            # -------------------------------------------------
+            # Room fields
+            # -------------------------------------------------
+
+            "id",
+            "hotel",
+            "hotel_name",
+            "room_type",
+            "name",
+            "description",
+            "price_per_night",
+            "max_guests",
+            "bed_count",
+            "room_size",
+            "amenities",
+            "is_available",
+            "is_active",
+            "created_at",
+            "updated_at",
+        ]
+
+        read_only_fields = [
+            "id",
+            "hotel_name",
+            "created_at",
+            "updated_at",
+        ]
 
 
 # =========================================================
@@ -248,15 +292,13 @@ class BookingSerializer(serializers.ModelSerializer):
         # -------------------------------------------------
         # CHECK OVERLAPPING BOOKINGS
         #
-        # Example:
-        #
         # Existing:
         # 1 Nov → 3 Nov
         #
         # New:
         # 3 Nov → 5 Nov
         #
-        # This IS allowed.
+        # Allowed.
         #
         # Existing:
         # 1 Nov → 3 Nov
@@ -264,7 +306,7 @@ class BookingSerializer(serializers.ModelSerializer):
         # New:
         # 2 Nov → 5 Nov
         #
-        # This is NOT allowed.
+        # Not allowed.
         # -------------------------------------------------
 
         overlapping_bookings = Booking.objects.filter(

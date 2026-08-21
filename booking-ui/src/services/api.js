@@ -83,20 +83,23 @@ export async function authenticatedFetch(
 
     const makeRequest = (token) => {
 
+        const headers = {
+            ...(options.headers || {}),
+            "Content-Type": "application/json",
+        };
+
+        // Only add Authorization when a token exists
+        if (token) {
+
+            headers.Authorization =
+                `Bearer ${token}`;
+        }
+
         return fetch(
             url,
             {
                 ...options,
-
-                headers: {
-                    ...(options.headers || {}),
-
-                    Authorization:
-                        `Bearer ${token}`,
-
-                    "Content-Type":
-                        "application/json",
-                },
+                headers,
             }
         );
     };
@@ -115,6 +118,7 @@ export async function authenticatedFetch(
     // =====================================================
 
     if (response.status !== 401) {
+
         return response;
     }
 
@@ -133,6 +137,7 @@ export async function authenticatedFetch(
     // =====================================================
 
     if (!newAccessToken) {
+
         return response;
     }
 
@@ -170,6 +175,10 @@ export async function getHotels() {
 }
 
 
+// =========================================================
+// GET SINGLE HOTEL
+// =========================================================
+
 export async function getHotel(id) {
 
     const response = await fetch(
@@ -180,6 +189,27 @@ export async function getHotel(id) {
 
         throw new Error(
             "Failed to fetch hotel"
+        );
+    }
+
+    return response.json();
+}
+
+
+// =========================================================
+// FEATURED HOTELS
+// =========================================================
+
+export async function getFeaturedHotels() {
+
+    const response = await fetch(
+        `${API_BASE_URL}/hotels/featured/`
+    );
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Failed to fetch featured hotels"
         );
     }
 
@@ -244,8 +274,26 @@ export async function getRoomsByHotel(
     hotelId
 ) {
 
+    // -----------------------------------------------------
+    // Prevent an invalid request such as:
+    //
+    // /rooms/?hotel=undefined
+    // -----------------------------------------------------
+
+    if (
+        hotelId === undefined ||
+        hotelId === null ||
+        hotelId === ""
+    ) {
+
+        throw new Error(
+            "Hotel ID is required to fetch rooms"
+        );
+    }
+
+
     const response = await fetch(
-        `${API_BASE_URL}/rooms/?hotel=${hotelId}`
+        `${API_BASE_URL}/rooms/?hotel=${encodeURIComponent(hotelId)}`
     );
 
 
@@ -260,6 +308,10 @@ export async function getRoomsByHotel(
     return response.json();
 }
 
+
+// =========================================================
+// GET SINGLE ROOM
+// =========================================================
 
 export async function getRoom(id) {
 
@@ -321,6 +373,10 @@ export async function registerUser(
     return data;
 }
 
+
+// =========================================================
+// LOGIN
+// =========================================================
 
 export async function loginUser(
     credentials
@@ -391,6 +447,10 @@ export async function getBookings() {
     return data;
 }
 
+
+// =========================================================
+// CANCEL BOOKING
+// =========================================================
 
 export async function cancelBooking(
     id

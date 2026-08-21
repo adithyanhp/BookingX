@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     HotelListCreateView,
+    FeaturedHotelListView,
     HotelDetailView,
     HotelSearchView,
     RoomListCreateView,
@@ -28,6 +29,16 @@ urlpatterns = [
         "hotels/search/",
         HotelSearchView.as_view(),
         name="hotel-search"
+    ),
+
+    # -----------------------------------------------------
+    # FEATURED HOTELS
+    # -----------------------------------------------------
+
+    path(
+        "hotels/featured/",
+        FeaturedHotelListView.as_view(),
+        name="featured-hotel-list"
     ),
 
     path(
@@ -76,3 +87,4 @@ urlpatterns = [
         name="booking-cancel"
     ),
 ]
+
