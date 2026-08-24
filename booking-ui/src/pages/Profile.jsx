@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import {
     getUserProfile,
     deleteAccount,
 } from "../services/api";
+
 import { useAuth } from "../context/AuthContext";
+
 import "./Profile.css";
+
 
 function Profile() {
 
     const navigate = useNavigate();
+
     const { logout } = useAuth();
 
+
+    // =========================================================
+    // PROFILE STATE
+    // =========================================================
+
     const [profile, setProfile] = useState(null);
+
     const [loading, setLoading] = useState(true);
+
     const [error, setError] = useState("");
+
 
     // =========================================================
     // DELETE ACCOUNT STATE
@@ -80,9 +93,35 @@ function Profile() {
             }
         };
 
+
         loadProfile();
 
     }, []);
+
+
+    // =========================================================
+    // PREVENT BODY SCROLL WHEN DELETE MODAL IS OPEN
+    // =========================================================
+
+    useEffect(() => {
+
+        if (showDeleteModal) {
+
+            document.body.style.overflow = "hidden";
+
+        } else {
+
+            document.body.style.overflow = "";
+        }
+
+
+        return () => {
+
+            document.body.style.overflow = "";
+
+        };
+
+    }, [showDeleteModal]);
 
 
     // =========================================================
@@ -92,7 +131,9 @@ function Profile() {
     const openDeleteModal = () => {
 
         setCurrentPassword("");
+
         setDeleteError("");
+
         setShowPassword(false);
 
         setShowDeleteModal(true);
@@ -105,13 +146,21 @@ function Profile() {
 
     const closeDeleteModal = () => {
 
+        // Do not allow the user to close the modal while
+        // the account deletion request is being processed.
+
         if (deleteLoading) {
+
             return;
         }
 
+
         setShowDeleteModal(false);
+
         setCurrentPassword("");
+
         setDeleteError("");
+
         setShowPassword(false);
     };
 
@@ -124,8 +173,19 @@ function Profile() {
 
         event.preventDefault();
 
+
         // -----------------------------------------------------
-        // Validate password
+        // Prevent duplicate submission
+        // -----------------------------------------------------
+
+        if (deleteLoading) {
+
+            return;
+        }
+
+
+        // -----------------------------------------------------
+        // Validate current password
         // -----------------------------------------------------
 
         if (!currentPassword.trim()) {
@@ -137,41 +197,72 @@ function Profile() {
             return;
         }
 
+
         try {
 
             setDeleteLoading(true);
+
             setDeleteError("");
 
+
             // -------------------------------------------------
-            // Permanently delete account
+            // PERMANENT ACCOUNT DELETION
             // -------------------------------------------------
 
             await deleteAccount(
                 currentPassword
             );
 
+
             // -------------------------------------------------
-            // Clear authentication state
+            // Close modal and clear local state
+            // -------------------------------------------------
+
+            setShowDeleteModal(false);
+
+            setCurrentPassword("");
+
+            setDeleteError("");
+
+            setShowPassword(false);
+
+
+            // -------------------------------------------------
+            // LOGOUT
             //
-            // logout() removes:
+            // AuthContext is responsible for clearing:
+            //
             // access_token
             // refresh_token
             //
-            // and also updates AuthContext.
+            // and updating authentication state.
             // -------------------------------------------------
 
-            logout();
+            await logout();
+
 
             // -------------------------------------------------
-            // Redirect to login page
+            // REDIRECT TO LOGIN
+            // -------------------------------------------------
+            //
+            // replace:true prevents the user from returning
+            // to the deleted account using the browser Back
+            // button.
+            //
+            // accountDeleted allows the Login page to display
+            // an optional success message.
             // -------------------------------------------------
 
-            navigate("/login", {
-                replace: true,
-                state: {
-                    accountDeleted: true,
-                },
-            });
+            navigate(
+                "/login",
+                {
+                    replace: true,
+                    state: {
+                        accountDeleted: true,
+                    },
+                }
+            );
+
 
         } catch (error) {
 
@@ -180,8 +271,9 @@ function Profile() {
                 error
             );
 
+
             // -------------------------------------------------
-            // Incorrect current password
+            // INCORRECT PASSWORD
             // -------------------------------------------------
 
             if (error?.status === 400) {
@@ -191,8 +283,9 @@ function Profile() {
                     "The password you entered is incorrect."
                 );
 
+
             // -------------------------------------------------
-            // Authentication/session problem
+            // AUTHENTICATION / SESSION EXPIRED
             // -------------------------------------------------
 
             } else if (error?.status === 401) {
@@ -201,8 +294,9 @@ function Profile() {
                     "Your login session has expired. Please login again."
                 );
 
+
             // -------------------------------------------------
-            // Other server errors
+            // OTHER SERVER ERRORS
             // -------------------------------------------------
 
             } else {
@@ -211,6 +305,7 @@ function Profile() {
                     "Unable to delete your account. Please try again."
                 );
             }
+
 
         } finally {
 
@@ -226,6 +321,7 @@ function Profile() {
     if (loading) {
 
         return (
+
             <div className="profile-page">
 
                 <div className="profile-container">
@@ -252,12 +348,13 @@ function Profile() {
 
 
     // =========================================================
-    // ERROR
+    // PROFILE ERROR
     // =========================================================
 
     if (error) {
 
         return (
+
             <div className="profile-page">
 
                 <div className="profile-container">
@@ -270,13 +367,16 @@ function Profile() {
 
                         </div>
 
+
                         <h2>
                             Unable to load profile
                         </h2>
 
+
                         <p>
                             {error}
                         </p>
+
 
                         <button
                             className="profile-login-button"
@@ -329,6 +429,7 @@ function Profile() {
 
             <div className="profile-container">
 
+
                 {/* =================================================
                     PAGE HEADER
                 ================================================= */}
@@ -343,9 +444,11 @@ function Profile() {
 
                     </span>
 
+
                     <h1>
                         My Profile
                     </h1>
+
 
                     <p>
                         View your account information and manage
@@ -367,6 +470,7 @@ function Profile() {
                     ================================================= */}
 
                     <div className="profile-card-header">
+
 
                         {/* PROFILE IMAGE */}
 
@@ -397,9 +501,11 @@ function Profile() {
                                 ACCOUNT HOLDER
                             </span>
 
+
                             <h2>
                                 {displayName}
                             </h2>
+
 
                             <p>
                                 @{profile?.username}
@@ -427,11 +533,13 @@ function Profile() {
 
                             </div>
 
+
                             <div className="profile-info-content">
 
                                 <span>
                                     First Name
                                 </span>
+
 
                                 <strong>
                                     {profile?.first_name ||
@@ -453,11 +561,13 @@ function Profile() {
 
                             </div>
 
+
                             <div className="profile-info-content">
 
                                 <span>
                                     Last Name
                                 </span>
+
 
                                 <strong>
                                     {profile?.last_name ||
@@ -479,11 +589,13 @@ function Profile() {
 
                             </div>
 
+
                             <div className="profile-info-content">
 
                                 <span>
                                     Username
                                 </span>
+
 
                                 <strong>
                                     {profile?.username ||
@@ -505,11 +617,13 @@ function Profile() {
 
                             </div>
 
+
                             <div className="profile-info-content">
 
                                 <span>
                                     Email Address
                                 </span>
+
 
                                 <strong>
                                     {profile?.email ||
@@ -529,11 +643,13 @@ function Profile() {
 
                     <div className="profile-card-footer">
 
+
                         {/* FOOTER INFORMATION */}
 
                         <div className="profile-footer-info">
 
                             <i className="bi bi-shield-check"></i>
+
 
                             <span>
                                 Your account information is securely
@@ -543,9 +659,7 @@ function Profile() {
                         </div>
 
 
-                        {/* =================================================
-                            PROFILE ACTIONS
-                        ================================================= */}
+                        {/* PROFILE ACTIONS */}
 
                         <div className="profile-actions">
 
@@ -598,6 +712,7 @@ function Profile() {
 
                 <div className="profile-danger-card">
 
+
                     <div className="profile-danger-content">
 
                         <div className="profile-danger-icon">
@@ -606,11 +721,13 @@ function Profile() {
 
                         </div>
 
+
                         <div>
 
                             <h3>
                                 Delete Account
                             </h3>
+
 
                             <p>
                                 Permanently delete your BookingX
@@ -653,6 +770,7 @@ function Profile() {
                             event.target ===
                             event.currentTarget
                         ) {
+
                             closeDeleteModal();
                         }
 
@@ -679,6 +797,7 @@ function Profile() {
 
                             </div>
 
+
                             <button
                                 type="button"
                                 className="profile-delete-modal-close"
@@ -704,6 +823,7 @@ function Profile() {
                                 Delete your account?
                             </h2>
 
+
                             <p>
                                 This action is permanent. Your
                                 BookingX account, profile, bookings,
@@ -717,6 +837,7 @@ function Profile() {
                             <div className="profile-delete-warning">
 
                                 <i className="bi bi-shield-exclamation"></i>
+
 
                                 <span>
                                     This cannot be undone once
@@ -757,6 +878,7 @@ function Profile() {
                                             setCurrentPassword(
                                                 event.target.value
                                             );
+
 
                                             if (deleteError) {
 
@@ -799,15 +921,14 @@ function Profile() {
                                 </div>
 
 
-                                {/* =================================================
-                                    DELETE ERROR
-                                ================================================= */}
+                                {/* DELETE ERROR */}
 
                                 {deleteError && (
 
                                     <div className="profile-delete-error">
 
                                         <i className="bi bi-exclamation-circle"></i>
+
 
                                         <span>
                                             {deleteError}
@@ -818,11 +939,12 @@ function Profile() {
                                 )}
 
 
-                                {/* =================================================
-                                    MODAL ACTIONS
-                                ================================================= */}
+                                {/* MODAL ACTIONS */}
 
                                 <div className="profile-delete-modal-actions">
+
+
+                                    {/* CANCEL */}
 
                                     <button
                                         type="button"
@@ -833,6 +955,8 @@ function Profile() {
                                         Cancel
                                     </button>
 
+
+                                    {/* CONFIRM DELETE */}
 
                                     <button
                                         type="submit"
@@ -846,19 +970,23 @@ function Profile() {
                                         {deleteLoading ? (
 
                                             <>
+
                                                 <span
                                                     className="profile-delete-spinner"
                                                 ></span>
 
                                                 Deleting...
+
                                             </>
 
                                         ) : (
 
                                             <>
+
                                                 <i className="bi bi-trash3"></i>
 
                                                 Permanently Delete
+
                                             </>
 
                                         )}
@@ -880,5 +1008,6 @@ function Profile() {
         </div>
     );
 }
+
 
 export default Profile;

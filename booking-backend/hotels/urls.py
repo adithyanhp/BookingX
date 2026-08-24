@@ -4,6 +4,7 @@ from .views import (
     HotelListCreateView,
     FeaturedHotelListView,
     HotelDetailView,
+    HotelLocationSearchView,
     HotelSearchView,
     RoomListCreateView,
     RoomDetailView,
@@ -24,6 +25,38 @@ urlpatterns = [
         HotelListCreateView.as_view(),
         name="hotel-list-create"
     ),
+
+    # -----------------------------------------------------
+    # LIVE HOTEL LOCATION SEARCH
+    # -----------------------------------------------------
+    #
+    # GET:
+    # /api/hotels/locations/?q=koch
+    #
+    # Returns location suggestions while the user types.
+    #
+    # Example response:
+    #
+    # [
+    #     {
+    #         "city": "Kochi",
+    #         "state": "Kerala",
+    #         "country": "India",
+    #         "label": "Kochi, Kerala, India"
+    #     }
+    # ]
+    #
+    # -----------------------------------------------------
+
+    path(
+        "hotels/locations/",
+        HotelLocationSearchView.as_view(),
+        name="hotel-location-search"
+    ),
+
+    # -----------------------------------------------------
+    # HOTEL SEARCH
+    # -----------------------------------------------------
 
     path(
         "hotels/search/",

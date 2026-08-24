@@ -59,6 +59,10 @@ export function AuthProvider({ children }) {
 
     const login = (data) => {
 
+        // -----------------------------------------------------
+        // SAVE ACCESS TOKEN
+        // -----------------------------------------------------
+
         if (data?.access) {
 
             localStorage.setItem(
@@ -67,6 +71,10 @@ export function AuthProvider({ children }) {
             );
         }
 
+
+        // -----------------------------------------------------
+        // SAVE REFRESH TOKEN
+        // -----------------------------------------------------
 
         if (data?.refresh) {
 
@@ -78,10 +86,13 @@ export function AuthProvider({ children }) {
 
 
         // -----------------------------------------------------
-        // Mark user as authenticated
+        // UPDATE AUTHENTICATION STATE
         // -----------------------------------------------------
 
-        if (data?.access && data?.refresh) {
+        if (
+            data?.access &&
+            data?.refresh
+        ) {
 
             setIsAuthenticated(true);
         }
@@ -92,43 +103,74 @@ export function AuthProvider({ children }) {
     // LOGOUT
     // =========================================================
     //
+    // Normal logout:
+    //
     // 1. Send logout request to Django
     // 2. Django creates UserActivity(LOGOUT)
-    // 3. Remove JWT tokens from browser
+    // 3. Remove JWT tokens
     // 4. Update authentication state
     //
-    // Even if the backend request fails, the user is still
-    // logged out locally.
+    // Account deletion:
+    //
+    // logout({
+    //     skipServerRequest: true
+    // })
+    //
+    // Because the account has already been permanently deleted,
+    // Django can no longer authenticate the user for /logout/.
+    //
     // =========================================================
 
-    const logout = async () => {
+    const logout = async ({
+        skipServerRequest = false,
+    } = {}) => {
 
         const accessToken =
             localStorage.getItem("access_token");
 
 
-        // -----------------------------------------------------
-        // RECORD LOGOUT ACTIVITY IN DJANGO
-        // -----------------------------------------------------
+        // =====================================================
+        // RECORD LOGOUT ACTIVITY
+        // =====================================================
+        //
+        // Skip this when the account has already been deleted.
+        //
+        // =====================================================
 
-        if (accessToken) {
+        if (
+            accessToken &&
+            !skipServerRequest
+        ) {
 
             try {
 
-                await fetch(
-                    `${API_BASE_URL}/auth/logout/`,
-                    {
-                        method: "POST",
+                const response =
+                    await fetch(
+                        `${API_BASE_URL}/auth/logout/`,
+                        {
+                            method: "POST",
 
-                        headers: {
-                            "Content-Type":
-                                "application/json",
+                            headers: {
+                                "Content-Type":
+                                    "application/json",
 
-                            "Authorization":
-                                `Bearer ${accessToken}`,
-                        },
-                    }
-                );
+                                "Authorization":
+                                    `Bearer ${accessToken}`,
+                            },
+                        }
+                    );
+
+
+                // -------------------------------------------------
+                // Backend logout failed
+                // -------------------------------------------------
+
+                if (!response.ok) {
+
+                    console.warn(
+                        "Logout request was not accepted by the server."
+                    );
+                }
 
             } catch (error) {
 
@@ -140,9 +182,9 @@ export function AuthProvider({ children }) {
         }
 
 
-        // -----------------------------------------------------
+        // =====================================================
         // REMOVE JWT TOKENS
-        // -----------------------------------------------------
+        // =====================================================
 
         localStorage.removeItem(
             "access_token"
@@ -153,9 +195,9 @@ export function AuthProvider({ children }) {
         );
 
 
-        // -----------------------------------------------------
+        // =====================================================
         // UPDATE AUTHENTICATION STATE
-        // -----------------------------------------------------
+        // =====================================================
 
         setIsAuthenticated(false);
     };
@@ -166,6 +208,7 @@ export function AuthProvider({ children }) {
     // =========================================================
 
     return (
+
         <AuthContext.Provider
             value={{
                 isAuthenticated,
@@ -174,7 +217,9 @@ export function AuthProvider({ children }) {
                 logout,
             }}
         >
+
             {children}
+
         </AuthContext.Provider>
     );
 }

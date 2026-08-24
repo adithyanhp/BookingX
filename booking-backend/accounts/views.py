@@ -1,3 +1,5 @@
+from django.db import transaction
+
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -69,7 +71,7 @@ def create_activity_log(
     """
     Create a user authentication activity log.
 
-    The password or JWT tokens are never stored.
+    Passwords and JWT tokens are never stored.
     """
 
     UserActivity.objects.create(
@@ -287,7 +289,7 @@ class ChangePasswordView(APIView):
             #     Account whose password changed.
             #
             # changed_by:
-            #     Authenticated user who performed the change.
+            #     Authenticated user who performed change.
             #
             # change_type:
             #     USER
@@ -332,10 +334,11 @@ class ChangePasswordView(APIView):
 # }
 #
 # IMPORTANT:
+# - Authentication is required.
 # - Only the authenticated user can delete their account.
 # - Current password is verified on the backend.
 # - Password is never stored.
-# - User is permanently deleted.
+# - Account deletion happens inside a transaction.
 # - Related objects follow their on_delete rules.
 # =========================================================
 
@@ -390,8 +393,15 @@ class DeleteAccountView(APIView):
         # PERMANENT ACCOUNT DELETION
         # -------------------------------------------------
         #
-        # Django applies the on_delete behaviour defined
-        # on related models.
+        # The deletion is wrapped in a database transaction.
+        #
+        # If deletion fails partway through, Django rolls
+        # the transaction back instead of leaving the
+        # database in an inconsistent state.
+        #
+        # Related objects follow their model on_delete rules.
+        #
+        # Expected behaviour:
         #
         # Booking.user:
         #     CASCADE
@@ -407,21 +417,31 @@ class DeleteAccountView(APIView):
         # - User account is permanently deleted.
         # - User's bookings are deleted.
         # - User profile is deleted.
-        # - Login/logout activity remains.
-        # - Activity's user field becomes NULL.
+        # - UserActivity records remain.
+        # - UserActivity.user becomes NULL.
         #
 
-        user.delete()
+        with transaction.atomic():
+
+            user.delete()
+
+        # -------------------------------------------------
+        # SUCCESS
+        # -------------------------------------------------
+        #
+        # 204 No Content is the standard response for a
+        # successful permanent DELETE operation.
+        #
+        # The frontend api.js already supports an empty
+        # response.
+        #
 
         return Response(
-            {
-                "detail":
-                    "Your account has been permanently deleted."
-            },
-            status=status.HTTP_200_OK,
+            status=status.HTTP_204_NO_CONTENT
         )
 
 
 # =========================================================
 # END OF VIEWS
 # =========================================================
+

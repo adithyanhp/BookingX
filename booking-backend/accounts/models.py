@@ -21,6 +21,7 @@ class UserProfile(models.Model):
     )
 
     def __str__(self):
+
         return self.user.username
 
 
@@ -37,16 +38,30 @@ class PasswordChangeLog(models.Model):
 
     # -----------------------------------------------------
     # User whose password was changed
+    #
+    # SET_NULL is intentional.
+    #
+    # If the user permanently deletes their account,
+    # the password-change history remains available
+    # in Django Admin.
+    #
+    # The user relationship becomes NULL instead of
+    # deleting the password-change record.
     # -----------------------------------------------------
 
     user = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
         related_name="password_change_logs"
     )
 
     # -----------------------------------------------------
     # User/admin who performed the password change
+    #
+    # SET_NULL allows the audit record to remain even if
+    # the account that performed the action is deleted.
     # -----------------------------------------------------
 
     changed_by = models.ForeignKey(
@@ -75,13 +90,23 @@ class PasswordChangeLog(models.Model):
     )
 
     class Meta:
+
         ordering = ["-changed_at"]
+
         verbose_name = "Password Change Log"
+
         verbose_name_plural = "Password Change Logs"
 
     def __str__(self):
+
+        username = (
+            self.user.username
+            if self.user
+            else "Deleted User"
+        )
+
         return (
-            f"{self.user.username} - "
+            f"{username} - "
             f"{self.get_change_type_display()} - "
             f"{self.changed_at:%Y-%m-%d %H:%M}"
         )
@@ -104,8 +129,8 @@ class UserActivity(models.Model):
     # SET_NULL is intentional.
     #
     # If the user permanently deletes their account,
-    # the authentication history remains available in
-    # Django Admin.
+    # the authentication history remains available
+    # in Django Admin.
     #
     # The user relationship becomes NULL instead of
     # deleting the activity history.
@@ -154,8 +179,11 @@ class UserActivity(models.Model):
     )
 
     class Meta:
+
         ordering = ["-timestamp"]
+
         verbose_name = "User Activity"
+
         verbose_name_plural = "User Activities"
 
     def __str__(self):
@@ -171,4 +199,5 @@ class UserActivity(models.Model):
             f"{self.get_action_display()} - "
             f"{self.timestamp:%Y-%m-%d %H:%M:%S}"
         )
+
     

@@ -1,6 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-
 /* =========================================================
    ROOT
 ========================================================= */
@@ -15,7 +14,6 @@
   --text-muted: #6c757d;
   --white: #ffffff;
 }
-
 
 /* =========================================================
    GLOBAL
@@ -68,7 +66,6 @@ section {
   padding: 80px 0;
 }
 
-
 /* =========================================================
    NAVBAR
 ========================================================= */
@@ -77,16 +74,11 @@ section {
   position: sticky;
   top: 0;
   z-index: 1000;
-
   width: 100%;
-
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
-
   border-bottom: 1px solid var(--border-color);
-
   box-shadow: 0 3px 15px rgba(0, 0, 0, 0.04);
-
   transition: box-shadow 0.25s ease;
 }
 
@@ -94,7 +86,6 @@ section {
   min-height: 76px;
   padding: 10px 0;
 }
-
 
 /* =========================================================
    LOGO
@@ -104,12 +95,9 @@ section {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-
   color: var(--dark-color);
-
   font-size: 23px;
   font-weight: 750;
-
   text-decoration: none;
 }
 
@@ -120,25 +108,19 @@ section {
 .logo-icon {
   width: 40px;
   height: 40px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 11px;
-
   background: var(--primary-color);
   color: var(--white);
-
   font-size: 18px;
-
   box-shadow: 0 5px 15px rgba(13, 110, 253, 0.2);
 }
 
 .logo-x {
   color: var(--primary-color);
 }
-
 
 /* =========================================================
    NAVIGATION
@@ -154,21 +136,14 @@ section {
 
 .booking-nav .nav-link {
   position: relative;
-
   display: flex;
   align-items: center;
-
   gap: 7px;
-
   padding: 10px 14px !important;
-
   border-radius: 9px;
-
   color: #5f6368;
-
   font-size: 14px;
   font-weight: 600;
-
   transition:
     color 0.2s ease,
     background 0.2s ease;
@@ -190,20 +165,14 @@ section {
 
 .booking-nav .nav-link.active::after {
   content: '';
-
   position: absolute;
-
   left: 14px;
   right: 14px;
   bottom: 3px;
-
   height: 2px;
-
   border-radius: 5px;
-
   background: var(--primary-color);
 }
-
 
 /* =========================================================
    NAVBAR ACTIONS
@@ -219,22 +188,15 @@ section {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   gap: 7px;
-
   padding: 10px 15px;
-
   border: 1px solid #dee2e6;
   border-radius: 10px;
-
   background: var(--white);
   color: #343a40;
-
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
-
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
@@ -251,24 +213,16 @@ section {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   gap: 8px;
-
   padding: 10px 17px;
-
   border: none;
   border-radius: 10px;
-
   background: var(--primary-color);
   color: var(--white);
-
   font-size: 14px;
   font-weight: 600;
-
   cursor: pointer;
-
   box-shadow: 0 5px 15px rgba(13, 110, 253, 0.18);
-
   transition:
     transform 0.2s ease,
     background 0.2s ease,
@@ -277,9 +231,7 @@ section {
 
 .register-button:hover {
   background: var(--primary-dark);
-
   transform: translateY(-1px);
-
   box-shadow: 0 7px 18px rgba(13, 110, 253, 0.25);
 }
 
@@ -291,22 +243,16 @@ section {
   transform: translateX(3px);
 }
 
-
 /* =========================================================
    MOBILE NAVBAR
 ========================================================= */
 
 .site-header .navbar-toggler {
   border: 1px solid #dee2e6;
-
   border-radius: 9px;
-
   padding: 7px 10px;
-
   color: var(--dark-color);
-
   background: var(--white);
-
   box-shadow: none;
 }
 
@@ -318,46 +264,33 @@ section {
   font-size: 22px;
 }
 
-
 /* =========================================================
    HERO SECTION
 ========================================================= */
 
 .hero-section {
   position: relative;
-
   width: 100%;
   min-height: 580px;
-
   margin-bottom: 70px;
-
   display: flex;
   align-items: center;
-
   background-image: url('/hero.jpg');
   background-size: cover;
   background-position: center;
-
   color: var(--white);
-
   overflow: visible;
 }
 
 .hero-overlay {
   position: absolute;
-
   inset: 0;
-
   width: 100%;
   height: 100%;
-
   background: rgba(0, 0, 0, 0.45);
-
   pointer-events: none;
-
   z-index: 1;
 }
-
 
 /* =========================================================
    HERO CONTAINER
@@ -365,17 +298,12 @@ section {
 
 .hero-section > .container {
   position: relative;
-
   z-index: 2;
-
   width: 100%;
-
   margin-left: auto;
   margin-right: auto;
-
   min-width: 0;
 }
-
 
 /* =========================================================
    HERO CONTENT
@@ -383,23 +311,15 @@ section {
 
 .hero-content {
   position: relative;
-
   z-index: 3;
-
   display: block;
-
   width: 100%;
   max-width: 700px;
-
   padding: 80px 0;
-
   margin-left: 0;
   margin-right: auto;
-
   flex-shrink: 0;
-
   min-width: 0;
-
   pointer-events: none;
 }
 
@@ -410,29 +330,20 @@ section {
 .hero-badge {
   display: inline-flex;
   align-items: center;
-
   gap: 8px;
-
   padding: 8px 15px;
-
   border-radius: 50px;
-
   background: rgba(255, 255, 255, 0.15);
-
   backdrop-filter: blur(10px);
-
   font-size: 14px;
 }
 
 .hero-content h1 {
   margin-top: 20px;
   margin-bottom: 0;
-
   font-size: 58px;
   line-height: 1.1;
-
   font-weight: 800;
-
   max-width: 700px;
 }
 
@@ -442,16 +353,12 @@ section {
 
 .hero-content p {
   max-width: 600px;
-
   margin-top: 20px;
   margin-bottom: 0;
-
   font-size: 18px;
   line-height: 1.7;
-
   color: rgba(255, 255, 255, 0.9);
 }
-
 
 /* =========================================================
    BOOKING SEARCH
@@ -459,34 +366,21 @@ section {
 
 .booking-search {
   position: absolute;
-
   left: 50%;
   bottom: -55px;
-
   transform: translateX(-50%);
-
   width: min(1100px, 90%);
-
   display: flex;
   align-items: stretch;
-
   background: var(--white);
-
   padding: 10px;
-
   border-radius: 16px;
-
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-
   color: var(--dark-color);
-
   z-index: 100;
-
   min-width: 0;
-
   pointer-events: auto;
 }
-
 
 /* =========================================================
    SEARCH ITEMS
@@ -494,44 +388,31 @@ section {
 
 .search-item {
   position: relative;
-
   flex: 1 1 0;
-
   display: flex;
   align-items: center;
-
   gap: 12px;
-
   padding: 12px 16px;
-
   border-right: 1px solid var(--border-color);
-
   min-width: 0;
-
   height: 70px;
-
   pointer-events: auto;
 }
 
 .search-location {
   flex: 1.35 1 0;
-
   cursor: text;
 }
 
 .search-date {
   flex: 1 1 0;
-
   cursor: pointer;
 }
 
 .search-guests {
   flex: 1.2 1 0;
-
   border-right: none;
-
   cursor: pointer;
-
   transition: background 0.2s ease;
 }
 
@@ -543,7 +424,6 @@ section {
   border-right: none;
 }
 
-
 /* =========================================================
    SEARCH ICON
 ========================================================= */
@@ -551,24 +431,16 @@ section {
 .search-icon {
   width: 42px;
   height: 42px;
-
   flex-shrink: 0;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 10px;
-
   background: #eef5ff;
-
   color: var(--primary-color);
-
   font-size: 18px;
-
   pointer-events: none;
 }
-
 
 /* =========================================================
    SEARCH CONTENT
@@ -576,48 +448,31 @@ section {
 
 .search-content {
   position: relative;
-
   min-width: 0;
-
   flex: 1;
-
   overflow: hidden;
-
   z-index: 2;
 }
 
 .search-content small {
   display: block;
-
   color: var(--text-muted);
-
   font-size: 12px;
-
   margin-bottom: 5px;
-
   line-height: 1.2;
-
   pointer-events: none;
 }
 
 .search-content strong {
   display: block;
-
   width: 100%;
-
   font-size: 14px;
-
   font-weight: 600;
-
   white-space: nowrap;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   pointer-events: none;
 }
-
 
 /* =========================================================
    LOCATION INPUT
@@ -627,49 +482,92 @@ section {
   overflow: visible;
 }
 
-.search-location .search-content input[type="text"] {
+.search-location .search-content input[type='text'] {
   display: block;
-
   width: 100%;
   max-width: 100%;
-
   min-width: 0;
-
   padding: 0;
-
   margin: 0;
-
   border: none;
   outline: none;
-
   background: transparent;
-
   color: var(--dark-color);
-
   font-size: 14px;
   font-weight: 600;
-
   line-height: 1.3;
-
   pointer-events: auto;
-
   position: relative;
-
   z-index: 5;
 }
 
-.search-location .search-content input[type="text"]::placeholder {
+.search-location .search-content input[type='text']::placeholder {
   color: #9aa0a6;
-
   font-weight: 500;
-
   opacity: 1;
 }
 
-.search-location .search-content input[type="text"]:focus {
+.search-location .search-content input[type='text']:focus {
   outline: none;
 }
 
+/* =========================================================
+   LOCATION AUTOCOMPLETE
+========================================================= */
+
+.search-location {
+  position: relative;
+}
+
+.location-suggestions {
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 6px 0;
+  background: var(--white);
+  border: 1px solid #e6e9ee;
+  border-radius: 12px;
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.09),
+    0 2px 6px rgba(0, 0, 0, 0.04);
+  z-index: 10000;
+}
+
+.location-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 13px;
+  border: none;
+  background: transparent;
+  color: var(--dark-color);
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.4;
+  transition: background 0.18s ease;
+}
+
+.location-suggestion:hover {
+  background: #f4f8ff;
+}
+
+.location-suggestion i {
+  flex-shrink: 0;
+  color: var(--primary-color);
+  font-size: 14px;
+}
+
+.location-suggestion span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 /* =========================================================
    DATE INPUT
@@ -677,83 +575,54 @@ section {
 
 .date-input-wrapper {
   position: relative;
-
   display: block;
-
   width: 100%;
-
   min-width: 0;
-
   height: 100%;
-
   cursor: pointer;
-
   overflow: visible;
-
   z-index: 3;
 }
 
 .date-input-wrapper strong {
   display: flex;
-
   align-items: center;
-
   width: 100%;
   height: 100%;
-
   font-size: 14px;
-
   font-weight: 600;
-
   color: var(--dark-color);
-
   white-space: nowrap;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   pointer-events: none;
-
   position: relative;
-
   z-index: 1;
 }
 
-.date-input-wrapper input[type="date"] {
+.date-input-wrapper input[type='date'] {
   position: absolute;
-
   top: 0;
   left: 0;
-
   width: 100%;
   height: 100%;
-
   min-width: 0;
-
   padding: 0;
   margin: 0;
-
   border: none;
-
   background: transparent;
-
   opacity: 0;
-
   cursor: pointer;
-
   z-index: 10;
-
   pointer-events: auto;
 }
 
-.date-input-wrapper input[type="date"]:focus {
+.date-input-wrapper input[type='date']:focus {
   outline: none;
 }
 
 .search-date .search-content {
   overflow: visible;
-
   height: 100%;
 }
 
@@ -765,56 +634,39 @@ section {
   background: #fafcff;
 }
 
-
 /* =========================================================
    GUESTS & ROOMS SEARCH FIELD
 ========================================================= */
 
 .search-guests {
   position: relative;
-
   cursor: pointer;
-
   user-select: none;
 }
 
 .search-guests .search-content {
   display: flex;
-
   flex-direction: column;
-
   justify-content: center;
-
   overflow: hidden;
 }
 
 .search-guests .search-content small {
   margin-bottom: 5px;
-
   color: var(--text-muted);
-
   font-size: 12px;
-
   font-weight: 500;
-
   line-height: 1.2;
-
   white-space: nowrap;
 }
 
 .search-guests .search-content strong {
   color: var(--dark-color);
-
   font-size: 14px;
-
   font-weight: 600;
-
   line-height: 1.3;
-
   white-space: nowrap;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
 }
 
@@ -822,40 +674,26 @@ section {
   color: var(--primary-color);
 }
 
-
 /* =========================================================
    GUESTS & ROOMS DROPDOWN
 ========================================================= */
 
 .guests-dropdown {
   position: absolute;
-
   top: calc(100% + 7px);
-
   right: 0;
-
   width: 275px;
-
   padding: 12px 14px;
-
   background: var(--white);
-
   border: 1px solid #e6e9ee;
-
   border-radius: 12px;
-
   box-shadow:
     0 8px 24px rgba(0, 0, 0, 0.09),
     0 2px 6px rgba(0, 0, 0, 0.04);
-
   z-index: 9999;
-
   color: var(--dark-color);
-
   cursor: default;
-
   animation: guestDropdownIn 0.16s ease-out;
-
   pointer-events: auto;
 }
 
@@ -871,22 +709,16 @@ section {
   }
 }
 
-
 /* =========================================================
    GUEST ROW
 ========================================================= */
 
 .guest-row {
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 16px;
-
   padding: 10px 0;
-
   border-bottom: 1px solid #edf0f3;
 }
 
@@ -896,10 +728,8 @@ section {
 
 .guest-row:last-of-type {
   border-bottom: none;
-
   padding-bottom: 2px;
 }
-
 
 /* =========================================================
    GUEST TEXT
@@ -911,26 +741,18 @@ section {
 
 .guest-row strong {
   display: block;
-
   color: var(--dark-color);
-
   font-size: 13px;
-
   font-weight: 600;
-
   margin-bottom: 2px;
 }
 
 .guest-row small {
   display: block;
-
   color: #8a9199;
-
   font-size: 10px;
-
   line-height: 1.3;
 }
-
 
 /* =========================================================
    GUEST COUNTER
@@ -938,72 +760,50 @@ section {
 
 .guest-counter {
   display: flex;
-
   align-items: center;
-
   gap: 8px;
-
   flex-shrink: 0;
 }
 
 .guest-counter button {
   width: 28px;
   height: 28px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   border: 1px solid #dfe3e8;
-
   border-radius: 7px;
-
   background: #fff;
-
   color: #495057;
-
   font-size: 16px;
-
   line-height: 1;
-
   transition:
     background 0.18s ease,
     border-color 0.18s ease,
     color 0.18s ease,
     transform 0.18s ease;
-
   pointer-events: auto;
 }
 
 .guest-counter button:hover:not(:disabled) {
   border-color: #b9d2ff;
-
   background: #f4f8ff;
-
   color: var(--primary-color);
-
   transform: translateY(-1px);
 }
 
 .guest-counter button:disabled {
   opacity: 0.4;
-
   cursor: not-allowed;
 }
 
 .guest-counter span {
   width: 18px;
-
   text-align: center;
-
   font-size: 13px;
-
   font-weight: 600;
-
   color: var(--dark-color);
 }
-
 
 /* =========================================================
    GUEST DONE BUTTON
@@ -1011,39 +811,26 @@ section {
 
 .guests-done-btn {
   width: 100%;
-
   margin-top: 10px;
-
   padding: 8px 12px;
-
   border: none;
-
   border-radius: 7px;
-
   background: var(--primary-color);
-
   color: var(--white);
-
   font-size: 12px;
-
   font-weight: 600;
-
   transition:
     background 0.18s ease,
     transform 0.18s ease,
     box-shadow 0.18s ease;
-
   pointer-events: auto;
 }
 
 .guests-done-btn:hover {
   background: var(--primary-dark);
-
   transform: translateY(-1px);
-
   box-shadow: 0 4px 10px rgba(13, 110, 253, 0.16);
 }
-
 
 /* =========================================================
    SEARCH BUTTON
@@ -1051,52 +838,32 @@ section {
 
 .search-button {
   flex: 0 0 130px;
-
   align-self: center;
-
   height: 50px;
-
   border: none;
-
   background: var(--primary-color);
-
   color: var(--white);
-
   padding: 0 20px;
-
   border-radius: 11px;
-
   font-weight: 600;
-
   font-size: 14px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 8px;
-
   white-space: nowrap;
-
   cursor: pointer;
-
   transition:
     background 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
-
   pointer-events: auto;
-
   position: relative;
-
   z-index: 5;
 }
 
 .search-button:hover {
   background: var(--primary-dark);
-
   box-shadow: 0 6px 15px rgba(13, 110, 253, 0.22);
 }
 
@@ -1104,56 +871,35 @@ section {
   transform: scale(0.98);
 }
 
-
 /* =========================================================
    SEARCH ERROR
 ========================================================= */
 
 .search-error {
   position: absolute;
-
   left: 50%;
-
   bottom: -108px;
-
   transform: translateX(-50%);
-
   z-index: 200;
-
   width: min(1100px, 90%);
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 9px;
-
   padding: 12px 18px;
-
   border: 1px solid #f5c2c7;
-
   border-radius: 10px;
-
   background: #fff5f5;
-
   color: #b02a37;
-
   font-size: 13px;
-
   font-weight: 500;
-
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-
   animation: searchErrorIn 0.2s ease-out;
-
   pointer-events: none;
 }
 
 .search-error i {
   font-size: 15px;
-
   flex-shrink: 0;
 }
 
@@ -1169,51 +915,37 @@ section {
   }
 }
 
-
 /* =========================================================
    SECTION HEADING
 ========================================================= */
 
 .section-heading {
   text-align: center;
-
   max-width: 650px;
-
   margin: 0 auto 50px;
 }
 
 .section-label {
   display: inline-block;
-
   font-size: 13px;
-
   font-weight: 700;
-
   letter-spacing: 1.5px;
-
   color: var(--primary-color);
-
   margin-bottom: 10px;
 }
 
 .section-heading h2 {
   font-size: 38px;
-
   font-weight: 750;
-
   color: var(--dark-color);
-
   margin-bottom: 15px;
 }
 
 .section-heading p {
   color: var(--text-muted);
-
   line-height: 1.7;
-
   margin-bottom: 0;
 }
-
 
 /* =========================================================
    SPECIAL OFFERS
@@ -1221,21 +953,15 @@ section {
 
 .offers-section {
   padding: 110px 0 80px;
-
   background: var(--white);
 }
 
 .offer-card {
   height: 100%;
-
   background: var(--white);
-
   border: 1px solid var(--border-color);
-
   border-radius: 16px;
-
   overflow: hidden;
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -1243,24 +969,19 @@ section {
 
 .offer-card:hover {
   transform: translateY(-6px);
-
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
 
 .offer-image {
   position: relative;
-
   height: 230px;
-
   overflow: hidden;
 }
 
 .offer-image img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   transition: transform 0.4s ease;
 }
 
@@ -1270,20 +991,13 @@ section {
 
 .offer-discount {
   position: absolute;
-
   top: 15px;
   left: 15px;
-
   padding: 7px 12px;
-
   border-radius: 8px;
-
   background: var(--primary-color);
-
   color: var(--white);
-
   font-size: 13px;
-
   font-weight: 700;
 }
 
@@ -1293,39 +1007,26 @@ section {
 
 .offer-content h3 {
   font-size: 21px;
-
   font-weight: 700;
-
   margin-bottom: 10px;
-
   color: var(--dark-color);
 }
 
 .offer-content p {
   color: var(--text-muted);
-
   line-height: 1.6;
-
   margin-bottom: 20px;
 }
 
 .offer-button {
   border: none;
-
   padding: 0;
-
   background: transparent;
-
   color: var(--primary-color);
-
   font-weight: 600;
-
   display: inline-flex;
-
   align-items: center;
-
   gap: 8px;
-
   cursor: pointer;
 }
 
@@ -1337,52 +1038,37 @@ section {
   transform: translateX(4px);
 }
 
-
 /* =========================================================
    WHY CHOOSE US
 ========================================================= */
 
 .why-section {
   padding: 100px 0;
-
   background: var(--light-bg);
 }
 
 .why-title {
   margin-top: 10px;
-
   font-size: 40px;
-
   line-height: 1.2;
-
   font-weight: 750;
-
   color: var(--dark-color);
 }
 
 .why-description {
   margin-top: 20px;
-
   max-width: 500px;
-
   color: var(--text-muted);
-
   line-height: 1.8;
-
   font-size: 16px;
 }
 
 .feature-card {
   height: 100%;
-
   padding: 28px;
-
   background: var(--white);
-
   border: 1px solid var(--border-color);
-
   border-radius: 16px;
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -1390,50 +1076,35 @@ section {
 
 .feature-card:hover {
   transform: translateY(-5px);
-
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .feature-icon {
   width: 52px;
   height: 52px;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   margin-bottom: 20px;
-
   border-radius: 12px;
-
   background: #eef5ff;
-
   color: var(--primary-color);
-
   font-size: 22px;
 }
 
 .feature-card h3 {
   font-size: 19px;
-
   font-weight: 700;
-
   margin-bottom: 10px;
-
   color: var(--dark-color);
 }
 
 .feature-card p {
   margin: 0;
-
   color: var(--text-muted);
-
   line-height: 1.7;
-
   font-size: 14px;
 }
-
 
 /* =========================================================
    FEATURED HOTELS
@@ -1441,16 +1112,11 @@ section {
 
 .featured-section {
   position: relative;
-
   width: 100%;
-
   padding: 100px 0;
-
   background: var(--white);
-
   overflow: visible;
 }
-
 
 /* =========================================================
    FEATURED HOTEL CARD
@@ -1458,35 +1124,25 @@ section {
 
 .featured-section .hotel-card {
   position: relative;
-
   width: 100%;
   height: 100%;
   min-height: 100%;
-
   background: var(--white);
-
   border: 1px solid var(--border-color);
-
   border-radius: 16px;
-
   overflow: hidden;
-
   display: flex;
   flex-direction: column;
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
-
   isolation: isolate;
 }
 
 .featured-section .hotel-card:hover {
   transform: translateY(-5px);
-
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.10);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
 }
-
 
 /* =========================================================
    FEATURED HOTEL IMAGE
@@ -1494,31 +1150,21 @@ section {
 
 .featured-section .hotel-image {
   position: relative;
-
   width: 100%;
   height: 220px;
-
   min-height: 220px;
-
   overflow: hidden;
-
   background: #e9ecef;
-
   flex-shrink: 0;
 }
 
 .featured-section .hotel-image img {
   display: block;
-
   width: 100%;
   height: 100%;
-
   max-width: none;
-
   object-fit: cover;
-
   object-position: center;
-
   transition: transform 0.4s ease;
 }
 
@@ -1526,41 +1172,27 @@ section {
   transform: scale(1.05);
 }
 
-
 /* =========================================================
    FAVORITE BUTTON
 ========================================================= */
 
 .featured-section .favorite-button {
   position: absolute;
-
   top: 15px;
   right: 15px;
-
   z-index: 5;
-
   width: 38px;
   height: 38px;
-
   min-width: 38px;
-
   border: none;
-
   border-radius: 50%;
-
   background: rgba(255, 255, 255, 0.95);
-
   color: #495057;
-
   display: flex;
-
   align-items: center;
   justify-content: center;
-
   cursor: pointer;
-
   padding: 0;
-
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -1569,18 +1201,14 @@ section {
 
 .featured-section .favorite-button:hover {
   background: var(--white);
-
   color: #dc3545;
-
   transform: scale(1.05);
 }
 
 .featured-section .favorite-button i {
   font-size: 16px;
-
   line-height: 1;
 }
-
 
 /* =========================================================
    FEATURED HOTEL CONTENT
@@ -1588,24 +1216,15 @@ section {
 
 .featured-section .hotel-content {
   position: relative;
-
   width: 100%;
-
   padding: 20px;
-
   display: flex;
-
   flex-direction: column;
-
   flex: 1 1 auto;
-
   min-width: 0;
-
   background: var(--white);
-
   overflow: visible;
 }
-
 
 /* =========================================================
    HOTEL RATING
@@ -1613,42 +1232,30 @@ section {
 
 .featured-section .hotel-rating {
   display: flex;
-
   align-items: center;
-
   gap: 7px;
-
   margin-bottom: 10px;
-
   min-height: 20px;
 }
 
 .featured-section .hotel-rating span {
   display: inline-flex;
-
   align-items: center;
-
   gap: 5px;
-
   color: var(--dark-color);
-
   font-size: 14px;
-
   font-weight: 600;
 }
 
 .featured-section .hotel-rating span i {
   color: #ffc107;
-
   font-size: 13px;
 }
 
 .featured-section .hotel-rating small {
   color: var(--text-muted);
-
   font-size: 12px;
 }
-
 
 /* =========================================================
    HOTEL NAME
@@ -1656,22 +1263,14 @@ section {
 
 .featured-section .hotel-content h3 {
   display: block;
-
   width: 100%;
-
   margin: 0 0 8px;
-
   color: var(--dark-color);
-
   font-size: 19px;
-
   font-weight: 700;
-
   line-height: 1.4;
-
   overflow: visible;
 }
-
 
 /* =========================================================
    HOTEL LOCATION
@@ -1679,40 +1278,27 @@ section {
 
 .featured-section .hotel-location {
   display: flex;
-
   align-items: center;
-
   gap: 5px;
-
   width: 100%;
-
   margin-bottom: 20px;
-
   color: var(--text-muted);
-
   font-size: 14px;
-
   line-height: 1.4;
 }
 
 .featured-section .hotel-location i {
   flex-shrink: 0;
-
   color: var(--primary-color);
-
   font-size: 14px;
 }
 
 .featured-section .hotel-location span {
   min-width: 0;
-
   overflow: hidden;
-
   text-overflow: ellipsis;
-
   white-space: nowrap;
 }
-
 
 /* =========================================================
    HOTEL BOTTOM
@@ -1720,24 +1306,15 @@ section {
 
 .featured-section .hotel-bottom {
   width: 100%;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 15px;
-
   margin-top: auto;
-
   padding-top: 15px;
-
   border-top: 1px solid var(--border-color);
-
   overflow: visible;
 }
-
 
 /* =========================================================
    HOTEL PRICE
@@ -1745,36 +1322,25 @@ section {
 
 .featured-section .hotel-price {
   display: flex;
-
   align-items: baseline;
-
   gap: 4px;
-
   min-width: 0;
-
   flex-shrink: 0;
 }
 
 .featured-section .hotel-price strong {
   display: inline-block;
-
   color: var(--dark-color);
-
   font-size: 20px;
-
   font-weight: 700;
-
   white-space: nowrap;
 }
 
 .featured-section .hotel-price small {
   color: var(--text-muted);
-
   font-size: 12px;
-
   white-space: nowrap;
 }
-
 
 /* =========================================================
    VIEW HOTEL BUTTON
@@ -1782,43 +1348,24 @@ section {
 
 .featured-section .view-hotel-button {
   position: relative;
-
   z-index: 10;
-
   display: inline-flex;
-
   align-items: center;
-
   justify-content: center;
-
   gap: 6px;
-
   flex-shrink: 0;
-
   padding: 7px 0;
-
   border: none;
-
   background: transparent;
-
   color: var(--primary-color);
-
   font-size: 14px;
-
   font-weight: 600;
-
   line-height: 1.4;
-
   text-decoration: none;
-
   white-space: nowrap;
-
   cursor: pointer;
-
   visibility: visible;
-
   opacity: 1;
-
   transition:
     color 0.2s ease,
     transform 0.2s ease;
@@ -1826,17 +1373,13 @@ section {
 
 .featured-section .view-hotel-button:hover {
   color: var(--primary-dark);
-
   text-decoration: none;
 }
 
 .featured-section .view-hotel-button i {
   display: inline-block;
-
   font-size: 14px;
-
   line-height: 1;
-
   transition: transform 0.2s ease;
 }
 
@@ -1844,35 +1387,27 @@ section {
   transform: translateX(4px);
 }
 
-
 /* =========================================================
    POPULAR DESTINATIONS
 ========================================================= */
 
 .destinations-section {
   padding: 100px 0;
-
   background: var(--light-bg);
 }
 
 .destination-card {
   position: relative;
-
   height: 280px;
-
   overflow: hidden;
-
   border-radius: 18px;
-
   cursor: pointer;
 }
 
 .destination-card img {
   width: 100%;
   height: 100%;
-
   object-fit: cover;
-
   transition: transform 0.5s ease;
 }
 
@@ -1882,51 +1417,37 @@ section {
 
 .destination-overlay {
   position: absolute;
-
   inset: 0;
-
   background: linear-gradient(
     to top,
     rgba(0, 0, 0, 0.75),
     rgba(0, 0, 0, 0.05)
   );
-
   pointer-events: none;
 }
 
 .destination-content {
   position: absolute;
-
   left: 0;
   right: 0;
   bottom: 0;
-
   padding: 25px;
-
   display: flex;
-
   align-items: flex-end;
-
   justify-content: space-between;
-
   gap: 15px;
-
   color: var(--white);
 }
 
 .destination-content h3 {
   margin: 0 0 6px;
-
   font-size: 24px;
-
   font-weight: 700;
 }
 
 .destination-content p {
   margin: 0;
-
   font-size: 14px;
-
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -1936,20 +1457,13 @@ section {
 
 .destination-hotels {
   flex-shrink: 0;
-
   padding: 7px 11px;
-
   border-radius: 8px;
-
   background: rgba(255, 255, 255, 0.15);
-
   backdrop-filter: blur(8px);
-
   font-size: 12px;
-
   font-weight: 600;
 }
-
 
 /* =========================================================
    TESTIMONIALS
@@ -1957,21 +1471,15 @@ section {
 
 .testimonials-section {
   padding: 100px 0;
-
   background: var(--white);
 }
 
 .testimonial-card {
   height: 100%;
-
   padding: 30px;
-
   background: var(--light-bg);
-
   border: 1px solid var(--border-color);
-
   border-radius: 16px;
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -1979,77 +1487,58 @@ section {
 
 .testimonial-card:hover {
   transform: translateY(-5px);
-
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
 .testimonial-rating {
   display: flex;
-
   gap: 4px;
-
   margin-bottom: 20px;
 }
 
 .testimonial-rating i {
   color: #ffc107;
-
   font-size: 14px;
 }
 
 .testimonial-review {
   color: #495057;
-
   font-size: 15px;
-
   line-height: 1.8;
-
   margin-bottom: 25px;
 }
 
 .testimonial-user {
   display: flex;
-
   align-items: center;
-
   gap: 12px;
-
   padding-top: 20px;
-
   border-top: 1px solid #dee2e6;
 }
 
 .testimonial-user img {
   width: 50px;
   height: 50px;
-
   object-fit: cover;
-
   border-radius: 50%;
 }
 
 .testimonial-user h3 {
   margin: 0 0 4px;
-
   font-size: 16px;
-
   font-weight: 700;
-
   color: var(--dark-color);
 }
 
 .testimonial-user span {
   color: var(--text-muted);
-
   font-size: 13px;
 }
 
 .testimonial-user span i {
   margin-right: 4px;
-
   color: var(--primary-color);
 }
-
 
 /* =========================================================
    APP SECTION
@@ -2057,95 +1546,64 @@ section {
 
 .app-section {
   padding: 100px 0;
-
   background: var(--light-bg);
-
   overflow: hidden;
 }
 
 .app-title {
   margin-top: 10px;
-
   font-size: 42px;
-
   line-height: 1.2;
-
   font-weight: 750;
-
   color: var(--dark-color);
-
   max-width: 550px;
 }
 
 .app-description {
   margin-top: 20px;
-
   max-width: 550px;
-
   color: var(--text-muted);
-
   line-height: 1.8;
-
   font-size: 16px;
 }
 
 .app-features {
   margin-top: 25px;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
 }
 
 .app-feature {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   color: #495057;
-
   font-size: 15px;
 }
 
 .app-feature i {
   color: var(--primary-color);
-
   font-size: 18px;
 }
 
 .app-buttons {
   display: flex;
-
   gap: 12px;
-
   margin-top: 30px;
-
   flex-wrap: wrap;
 }
 
 .store-button {
   display: flex;
-
   align-items: center;
-
   gap: 10px;
-
   padding: 10px 18px;
-
   border: none;
-
   border-radius: 10px;
-
   background: var(--dark-color);
-
   color: var(--white);
-
   cursor: pointer;
-
   transition:
     transform 0.2s ease,
     background 0.2s ease;
@@ -2153,7 +1611,6 @@ section {
 
 .store-button:hover {
   transform: translateY(-2px);
-
   background: #343a40;
 }
 
@@ -2167,61 +1624,41 @@ section {
 
 .store-button small {
   display: block;
-
   font-size: 9px;
-
   line-height: 1;
-
   opacity: 0.8;
 }
 
 .store-button strong {
   display: block;
-
   font-size: 15px;
-
   margin-top: 3px;
 }
 
 .app-visual {
   position: relative;
-
   min-height: 480px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
 }
 
 .app-circle {
   position: absolute;
-
   width: 380px;
   height: 380px;
-
   border-radius: 50%;
-
   background: #e7f1ff;
 }
 
 .app-preview {
   position: relative;
-
   z-index: 2;
-
   width: min(280px, 70%);
-
   max-height: 500px;
-
   object-fit: contain;
-
-  filter: drop-shadow(
-    0 20px 25px rgba(0, 0, 0, 0.15)
-  );
+  filter: drop-shadow(0 20px 25px rgba(0, 0, 0, 0.15));
 }
-
 
 /* =========================================================
    FOOTER
@@ -2229,27 +1666,18 @@ section {
 
 .site-footer {
   padding: 80px 0 0;
-
   background: #111827;
-
   color: var(--white);
 }
 
 .footer-brand {
   display: inline-flex;
-
   align-items: center;
-
   gap: 10px;
-
   color: var(--white);
-
   font-size: 23px;
-
   font-weight: 750;
-
   text-decoration: none;
-
   margin-bottom: 20px;
 }
 
@@ -2264,58 +1692,38 @@ section {
 .footer-logo-icon {
   width: 40px;
   height: 40px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   border-radius: 11px;
-
   background: var(--primary-color);
-
   color: var(--white);
-
   font-size: 18px;
 }
 
 .footer-description {
   max-width: 380px;
-
   color: #9ca3af;
-
   font-size: 14px;
-
   line-height: 1.8;
-
   margin-bottom: 25px;
 }
 
 .footer-social {
   display: flex;
-
   gap: 10px;
 }
 
 .footer-social a {
   width: 38px;
   height: 38px;
-
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
   border-radius: 9px;
-
   background: #1f2937;
-
   color: #d1d5db;
-
   text-decoration: none;
-
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -2324,42 +1732,30 @@ section {
 
 .footer-social a:hover {
   background: var(--primary-color);
-
   color: var(--white);
-
   transform: translateY(-2px);
 }
 
 .footer-title {
   margin-bottom: 20px;
-
   font-size: 16px;
-
   font-weight: 700;
-
   color: var(--white);
 }
 
 .footer-links {
   list-style: none;
-
   padding: 0;
   margin: 0;
-
   display: flex;
-
   flex-direction: column;
-
   gap: 12px;
 }
 
 .footer-links a {
   color: #9ca3af;
-
   text-decoration: none;
-
   font-size: 14px;
-
   transition:
     color 0.2s ease,
     padding-left 0.2s ease;
@@ -2367,75 +1763,54 @@ section {
 
 .footer-links a:hover {
   color: var(--white);
-
   padding-left: 4px;
 }
 
 .footer-contact {
   display: flex;
-
   flex-direction: column;
-
   gap: 17px;
 }
 
 .footer-contact-item {
   display: flex;
-
   align-items: flex-start;
-
   gap: 10px;
-
   color: #9ca3af;
-
   font-size: 14px;
 }
 
 .footer-contact-item i {
   color: #5b9cff;
-
   font-size: 17px;
-
   margin-top: 1px;
 }
 
 .footer-bottom {
   margin-top: 60px;
-
   padding: 22px 0;
-
   border-top: 1px solid #273244;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
-
   gap: 20px;
 }
 
 .footer-bottom p {
   margin: 0;
-
   color: #6b7280;
-
   font-size: 13px;
 }
 
 .footer-bottom div {
   display: flex;
-
   gap: 20px;
 }
 
 .footer-bottom a {
   color: #6b7280;
-
   text-decoration: none;
-
   font-size: 13px;
-
   transition: color 0.2s ease;
 }
 
@@ -2443,32 +1818,25 @@ section {
   color: var(--white);
 }
 
-
 /* =========================================================
    TABLETS
 ========================================================= */
 
 @media (max-width: 991.98px) {
-
   .site-header .navbar {
     min-height: 68px;
   }
 
   .site-header .navbar-collapse {
     margin-top: 15px;
-
     padding: 15px;
-
     border-top: 1px solid var(--border-color);
-
     background: var(--white);
-
     border-radius: 12px;
   }
 
   .booking-nav {
     gap: 3px;
-
     margin-bottom: 15px !important;
   }
 
@@ -2482,46 +1850,35 @@ section {
 
   .navbar-actions {
     width: 100%;
-
     padding-top: 12px;
-
     border-top: 1px solid var(--border-color);
   }
 
   .login-button,
   .register-button {
     flex: 1;
-
     justify-content: center;
   }
-
 
   /* Hero */
 
   .hero-section {
     min-height: 760px;
-
     padding: 70px 0 180px;
-
     display: block;
-
     overflow: visible;
   }
 
   .hero-section > .container {
     width: 100%;
-
     margin-left: auto;
     margin-right: auto;
   }
 
   .hero-content {
     width: 100%;
-
     padding: 70px 0 40px;
-
     max-width: 700px;
-
     margin-left: 0;
     margin-right: auto;
   }
@@ -2530,22 +1887,15 @@ section {
     font-size: 45px;
   }
 
-
   /* Booking Search */
 
   .booking-search {
     left: 50%;
-
     bottom: -100px;
-
     width: min(92%, 650px);
-
     flex-direction: column;
-
     align-items: stretch;
-
     padding: 12px;
-
     z-index: 100;
   }
 
@@ -2554,15 +1904,10 @@ section {
   .search-date,
   .search-guests {
     width: 100%;
-
     flex: none;
-
     height: auto;
-
     min-height: 70px;
-
     border-right: none;
-
     border-bottom: 1px solid var(--border-color);
   }
 
@@ -2572,42 +1917,34 @@ section {
 
   .search-button {
     width: 100%;
-
     min-height: 55px;
-
     height: 55px;
-
     flex: none;
-
     justify-content: center;
-
     margin-top: 4px;
   }
 
   .guests-dropdown {
     position: absolute;
-
     top: calc(100% + 5px);
-
     left: 0;
-
     right: 0;
-
     width: 100%;
-
     max-width: none;
-
     padding: 12px 14px;
-
     z-index: 9999;
+  }
+
+  .location-suggestions {
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   .search-error {
     bottom: -175px;
-
     width: min(92%, 650px);
   }
-
 
   /* Sections */
 
@@ -2632,12 +1969,10 @@ section {
     font-size: 15px;
   }
 
-
   /* Featured Hotels */
 
   .featured-section .hotel-image {
     height: 220px;
-
     min-height: 220px;
   }
 
@@ -2649,7 +1984,6 @@ section {
     font-size: 13px;
   }
 
-
   /* App */
 
   .app-title {
@@ -2658,40 +1992,32 @@ section {
 
   .app-visual {
     min-height: 400px;
-
     margin-top: 20px;
   }
 }
-
 
 /* =========================================================
    MOBILE
 ========================================================= */
 
 @media (max-width: 767.98px) {
-
   body {
     overflow-x: hidden;
   }
 
   .container {
     width: 100%;
-
     max-width: 100%;
-
     padding-left: 20px;
     padding-right: 20px;
-
     margin-left: auto;
     margin-right: auto;
   }
-
 
   /* Navbar */
 
   .site-header .navbar {
     min-height: 64px;
-
     padding: 8px 0;
   }
 
@@ -2702,23 +2028,18 @@ section {
   .logo-icon {
     width: 36px;
     height: 36px;
-
     border-radius: 9px;
-
     font-size: 16px;
   }
 
   .site-header .navbar-collapse {
     margin-top: 10px;
-
     padding: 12px;
-
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
   }
 
   .booking-nav .nav-link {
     font-size: 14px;
-
     padding: 10px !important;
   }
 
@@ -2726,43 +2047,32 @@ section {
     width: 20px;
   }
 
-
   /* =====================================================
      HERO MOBILE
   ===================================================== */
 
   .hero-section {
     min-height: 780px;
-
     padding: 55px 0 200px;
-
     text-align: center;
-
     overflow: visible;
   }
 
   .hero-section > .container {
     width: 100%;
-
     max-width: 100%;
-
     padding-left: 20px;
     padding-right: 20px;
-
     margin-left: auto;
     margin-right: auto;
   }
 
   .hero-content {
     width: 100%;
-
     max-width: 700px;
-
     padding: 50px 0 30px;
-
     margin-left: auto;
     margin-right: auto;
-
     text-align: center;
   }
 
@@ -2772,30 +2082,21 @@ section {
 
   .hero-content h1 {
     width: 100%;
-
     max-width: 100%;
-
     font-size: 38px;
-
     line-height: 1.15;
-
     margin-left: auto;
     margin-right: auto;
   }
 
   .hero-content p {
     width: 100%;
-
     max-width: 600px;
-
     margin-left: auto;
     margin-right: auto;
-
     font-size: 15px;
-
     line-height: 1.7;
   }
-
 
   /* =====================================================
      SEARCH MOBILE
@@ -2803,17 +2104,11 @@ section {
 
   .booking-search {
     left: 50%;
-
     bottom: -120px;
-
     width: calc(100% - 32px);
-
     max-width: 500px;
-
     padding: 12px;
-
     border-radius: 14px;
-
     z-index: 100;
   }
 
@@ -2822,17 +2117,11 @@ section {
   .search-date,
   .search-guests {
     width: 100%;
-
     flex: none;
-
     min-height: 68px;
-
     padding: 12px;
-
     border-right: none;
-
     border-bottom: 1px solid var(--border-color);
-
     text-align: left;
   }
 
@@ -2843,7 +2132,6 @@ section {
   .search-icon {
     width: 40px;
     height: 40px;
-
     flex-shrink: 0;
   }
 
@@ -2855,7 +2143,7 @@ section {
     font-size: 14px;
   }
 
-  .search-location .search-content input[type="text"] {
+  .search-location .search-content input[type='text'] {
     font-size: 14px;
   }
 
@@ -2863,24 +2151,18 @@ section {
     height: 100%;
   }
 
-  .date-input-wrapper input[type="date"] {
+  .date-input-wrapper input[type='date'] {
     z-index: 20;
   }
 
   .search-button {
     width: 100%;
-
     min-height: 52px;
-
     height: 52px;
-
     flex: none;
-
     margin-top: 4px;
-
     justify-content: center;
   }
-
 
   /* =====================================================
      GUESTS & ROOMS MOBILE
@@ -2892,16 +2174,13 @@ section {
 
   .search-guests .search-content small {
     font-size: 11px;
-
     margin-bottom: 5px;
   }
 
   .search-guests .search-content strong {
     font-size: 14px;
-
     font-weight: 600;
   }
-
 
   /* =====================================================
      COMPACT MOBILE GUEST DROPDOWN
@@ -2909,27 +2188,19 @@ section {
 
   .guests-dropdown {
     left: 0;
-
     right: 0;
-
     width: 100%;
-
     top: calc(100% + 4px);
-
     padding: 12px;
-
     border-radius: 10px;
-
     box-shadow:
       0 7px 20px rgba(0, 0, 0, 0.08),
       0 2px 5px rgba(0, 0, 0, 0.03);
-
     z-index: 9999;
   }
 
   .guest-row {
     gap: 10px;
-
     padding: 9px 0;
   }
 
@@ -2943,7 +2214,6 @@ section {
 
   .guest-row strong {
     font-size: 12px;
-
     margin-bottom: 2px;
   }
 
@@ -2957,70 +2227,53 @@ section {
 
   .guest-counter button {
     width: 28px;
-
     height: 28px;
-
     border-radius: 6px;
-
     font-size: 15px;
   }
 
   .guest-counter span {
     width: 18px;
-
     font-size: 12px;
   }
 
   .guests-done-btn {
     margin-top: 9px;
-
     padding: 8px 10px;
-
     border-radius: 6px;
-
     font-size: 11px;
   }
-
 
   /* Search Error */
 
   .search-error {
     bottom: -195px;
-
     width: calc(100% - 32px);
-
     max-width: 500px;
-
     text-align: left;
-
     justify-content: flex-start;
   }
-
 
   /* Section headings */
 
   .section-heading {
     margin-bottom: 30px;
-
     text-align: center;
   }
 
   .section-heading h2 {
     font-size: 28px;
-
     line-height: 1.25;
   }
 
   .section-heading p {
     font-size: 14px;
-
     line-height: 1.7;
   }
 
   .section-label {
     font-size: 11px;
   }
-
 
   /* Offers */
 
@@ -3032,13 +2285,11 @@ section {
     min-height: 230px;
   }
 
-
   /* Why */
 
   .why-section {
     padding: 60px 0;
   }
-
 
   /* =====================================================
      FEATURED HOTELS MOBILE
@@ -3050,23 +2301,18 @@ section {
 
   .featured-section .hotel-card {
     width: 100%;
-
     height: auto;
-
     min-height: 0;
   }
 
   .featured-section .hotel-image {
     width: 100%;
-
     height: 220px;
-
     min-height: 220px;
   }
 
   .featured-section .hotel-content {
     width: 100%;
-
     padding: 18px;
   }
 
@@ -3076,9 +2322,7 @@ section {
 
   .featured-section .hotel-bottom {
     flex-wrap: nowrap;
-
     align-items: center;
-
     gap: 10px;
   }
 
@@ -3088,10 +2332,8 @@ section {
 
   .featured-section .view-hotel-button {
     font-size: 13px;
-
     padding: 6px 0;
   }
-
 
   /* Destinations */
 
@@ -3111,7 +2353,6 @@ section {
     font-size: 21px;
   }
 
-
   /* Testimonials */
 
   .testimonials-section {
@@ -3122,7 +2363,6 @@ section {
     padding: 22px;
   }
 
-
   /* App */
 
   .app-section {
@@ -3131,31 +2371,26 @@ section {
 
   .app-title {
     font-size: 30px;
-
     line-height: 1.25;
   }
 
   .app-description {
     font-size: 14px;
-
     line-height: 1.7;
   }
 
   .app-buttons {
     width: 100%;
-
     flex-direction: column;
   }
 
   .store-button {
     width: 100%;
-
     justify-content: center;
   }
 
   .app-visual {
     min-height: 350px;
-
     margin-top: 10px;
   }
 
@@ -3166,10 +2401,8 @@ section {
 
   .app-preview {
     width: 230px;
-
     max-height: 400px;
   }
-
 
   /* Footer */
 
@@ -3179,37 +2412,28 @@ section {
 
   .footer-bottom {
     flex-direction: column;
-
     align-items: flex-start;
-
     gap: 15px;
-
     margin-top: 45px;
   }
 
   .footer-bottom div {
     flex-wrap: wrap;
-
     gap: 15px;
   }
 }
-
 
 /* =========================================================
    SMALL PHONES
 ========================================================= */
 
 @media (max-width: 575.98px) {
-
   .container {
     width: 100%;
-
     max-width: 100%;
-
     padding-left: 16px;
     padding-right: 16px;
   }
-
 
   /* =====================================================
      HERO SMALL PHONES
@@ -3217,60 +2441,43 @@ section {
 
   .hero-section {
     min-height: 800px;
-
     padding-top: 45px;
-
     padding-bottom: 210px;
   }
 
   .hero-section > .container {
     width: 100%;
-
     max-width: 100%;
-
     padding-left: 16px;
     padding-right: 16px;
-
     margin-left: auto;
     margin-right: auto;
   }
 
   .hero-content {
     width: 100%;
-
     max-width: 100%;
-
     padding-top: 45px;
-
     padding-bottom: 25px;
-
     margin-left: auto;
     margin-right: auto;
-
     text-align: center;
   }
 
   .hero-content h1 {
     width: 100%;
-
     max-width: 100%;
-
     font-size: 32px;
-
     line-height: 1.15;
   }
 
   .hero-content p {
     width: 100%;
-
     max-width: 100%;
-
     margin-left: auto;
     margin-right: auto;
-
     font-size: 14px;
   }
-
 
   /* =====================================================
      SEARCH SMALL PHONES
@@ -3278,13 +2485,9 @@ section {
 
   .booking-search {
     width: calc(100% - 24px);
-
     bottom: -125px;
-
     padding: 10px;
-
     border-radius: 14px;
-
     z-index: 100;
   }
 
@@ -3293,16 +2496,13 @@ section {
   .search-date,
   .search-guests {
     width: 100%;
-
     min-height: 64px;
-
     padding: 11px 10px;
   }
 
   .search-icon {
     width: 38px;
     height: 38px;
-
     font-size: 16px;
   }
 
@@ -3314,13 +2514,12 @@ section {
     font-size: 13px;
   }
 
-  .search-location .search-content input[type="text"] {
+  .search-location .search-content input[type='text'] {
     font-size: 13px;
   }
 
   .search-guests .search-content small {
     font-size: 10px;
-
     margin-bottom: 4px;
   }
 
@@ -3328,18 +2527,15 @@ section {
     font-size: 13px;
   }
 
-  .date-input-wrapper input[type="date"] {
+  .date-input-wrapper input[type='date'] {
     z-index: 20;
   }
 
   .search-button {
     min-height: 50px;
-
     height: 50px;
-
     font-size: 14px;
   }
-
 
   /* =====================================================
      SMALL PHONE GUEST DROPDOWN
@@ -3347,19 +2543,15 @@ section {
 
   .guests-dropdown {
     padding: 11px;
-
     border-radius: 10px;
-
     box-shadow:
       0 6px 18px rgba(0, 0, 0, 0.08),
       0 2px 5px rgba(0, 0, 0, 0.03);
-
     z-index: 9999;
   }
 
   .guest-row {
     gap: 8px;
-
     padding: 8px 0;
   }
 
@@ -3377,40 +2569,29 @@ section {
 
   .guest-counter button {
     width: 27px;
-
     height: 27px;
-
     border-radius: 6px;
-
     font-size: 14px;
   }
 
   .guest-counter span {
     width: 17px;
-
     font-size: 12px;
   }
 
   .guests-done-btn {
     margin-top: 8px;
-
     padding: 7px 10px;
-
     border-radius: 6px;
-
     font-size: 11px;
   }
 
   .search-error {
     bottom: -200px;
-
     width: calc(100% - 24px);
-
     padding: 11px 13px;
-
     font-size: 12px;
   }
-
 
   /* Headings */
 
@@ -3418,14 +2599,12 @@ section {
     font-size: 26px;
   }
 
-
   /* =====================================================
      FEATURED HOTELS SMALL PHONES
   ===================================================== */
 
   .featured-section .hotel-image {
     height: 210px;
-
     min-height: 210px;
   }
 
@@ -3447,17 +2626,14 @@ section {
 
   .featured-section .view-hotel-button {
     font-size: 12px;
-
     gap: 5px;
   }
-
 
   /* Destinations */
 
   .destination-card {
     height: 220px;
   }
-
 
   /* App */
 

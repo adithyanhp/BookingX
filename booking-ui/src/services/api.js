@@ -47,18 +47,23 @@ async function refreshAccessToken() {
         }
 
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
 
         // Save new access token
 
-        localStorage.setItem(
-            "access_token",
-            data.access
-        );
+        if (data.access) {
+
+            localStorage.setItem(
+                "access_token",
+                data.access
+            );
+
+        }
 
 
-        return data.access;
+        return data.access || null;
 
 
     } catch (error) {
@@ -187,6 +192,10 @@ export async function authenticatedFetch(
 // HOTELS
 // =========================================================
 
+// ---------------------------------------------------------
+// GET ALL HOTELS
+// ---------------------------------------------------------
+
 export async function getHotels() {
 
     const response = await fetch(
@@ -206,9 +215,9 @@ export async function getHotels() {
 }
 
 
-// =========================================================
+// ---------------------------------------------------------
 // GET SINGLE HOTEL
-// =========================================================
+// ---------------------------------------------------------
 
 export async function getHotel(id) {
 
@@ -229,9 +238,9 @@ export async function getHotel(id) {
 }
 
 
-// =========================================================
+// ---------------------------------------------------------
 // FEATURED HOTELS
-// =========================================================
+// ---------------------------------------------------------
 
 export async function getFeaturedHotels() {
 
@@ -252,9 +261,9 @@ export async function getFeaturedHotels() {
 }
 
 
-// =========================================================
+// ---------------------------------------------------------
 // HOTEL SEARCH
-// =========================================================
+// ---------------------------------------------------------
 
 export async function searchHotels(params) {
 
@@ -306,6 +315,10 @@ export async function searchHotels(params) {
 // ROOMS
 // =========================================================
 
+// ---------------------------------------------------------
+// GET ROOMS BY HOTEL
+// ---------------------------------------------------------
+
 export async function getRoomsByHotel(
     hotelId
 ) {
@@ -341,9 +354,9 @@ export async function getRoomsByHotel(
 }
 
 
-// =========================================================
+// ---------------------------------------------------------
 // GET SINGLE ROOM
-// =========================================================
+// ---------------------------------------------------------
 
 export async function getRoom(id) {
 
@@ -676,8 +689,25 @@ export async function deleteAccount(
         );
 
 
-    const data =
-        await response.json();
+    /*
+     * DELETE endpoints may return an empty response.
+     * Handle both JSON and empty responses safely.
+     */
+
+    let data = null;
+
+    const contentType =
+        response.headers.get("content-type");
+
+
+    if (
+        contentType &&
+        contentType.includes("application/json")
+    ) {
+
+        data =
+            await response.json();
+    }
 
 
     if (!response.ok) {
@@ -696,6 +726,11 @@ export async function deleteAccount(
 // =========================================================
 // BOOKINGS
 // =========================================================
+
+
+// ---------------------------------------------------------
+// GET USER BOOKINGS
+// ---------------------------------------------------------
 
 export async function getBookings() {
 
@@ -725,9 +760,9 @@ export async function getBookings() {
 }
 
 
-// =========================================================
+// ---------------------------------------------------------
 // CANCEL BOOKING
-// =========================================================
+// ---------------------------------------------------------
 
 export async function cancelBooking(
     id
@@ -757,3 +792,4 @@ export async function cancelBooking(
 
     return data;
 }
+

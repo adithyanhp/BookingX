@@ -24,23 +24,24 @@ urlpatterns = [
     # REGISTER
     # ---------------------------------------------------------
     #
-    # POST:
-    # /api/auth/register/
+    # POST /api/auth/register/
+    #
+    # Creates a new user account.
     #
     # ---------------------------------------------------------
 
     path(
         "register/",
         RegisterView.as_view(),
-        name="register"
+        name="register",
     ),
+
 
     # ---------------------------------------------------------
     # LOGIN
     # ---------------------------------------------------------
     #
-    # POST:
-    # /api/auth/login/
+    # POST /api/auth/login/
     #
     # Custom LoginView:
     # - Validates username/password
@@ -52,32 +53,32 @@ urlpatterns = [
     path(
         "login/",
         LoginView.as_view(),
-        name="login"
+        name="login",
     ),
+
 
     # ---------------------------------------------------------
     # TOKEN REFRESH
     # ---------------------------------------------------------
     #
-    # POST:
-    # /api/auth/refresh/
+    # POST /api/auth/refresh/
     #
-    # Refreshes an expired access token.
+    # Generates a new access token using the refresh token.
     #
     # ---------------------------------------------------------
 
     path(
         "refresh/",
         TokenRefreshView.as_view(),
-        name="token-refresh"
+        name="token-refresh",
     ),
+
 
     # ---------------------------------------------------------
     # LOGOUT
     # ---------------------------------------------------------
     #
-    # POST:
-    # /api/auth/logout/
+    # POST /api/auth/logout/
     #
     # Requires authentication.
     #
@@ -87,14 +88,15 @@ urlpatterns = [
     # - IP address
     # - Browser/device information
     #
-    # The frontend must still remove the JWT tokens.
+    # The frontend is still responsible for removing the
+    # JWT tokens from localStorage.
     #
     # ---------------------------------------------------------
 
     path(
         "logout/",
         LogoutView.as_view(),
-        name="logout"
+        name="logout",
     ),
 
 
@@ -102,13 +104,23 @@ urlpatterns = [
     # USER PROFILE
     # =========================================================
 
+    # ---------------------------------------------------------
     # GET /api/auth/profile/
     # PATCH /api/auth/profile/
+    #
+    # GET:
+    # - Returns authenticated user's profile
+    #
+    # PATCH:
+    # - Updates profile information
+    # - Supports profile image upload
+    #
+    # ---------------------------------------------------------
 
     path(
         "profile/",
         ProfileView.as_view(),
-        name="profile"
+        name="profile",
     ),
 
 
@@ -116,12 +128,20 @@ urlpatterns = [
     # CHANGE PASSWORD
     # =========================================================
 
+    # ---------------------------------------------------------
     # PATCH /api/auth/profile/password/
+    #
+    # Requires:
+    # - current_password
+    # - new_password
+    # - new_password2
+    #
+    # ---------------------------------------------------------
 
     path(
         "profile/password/",
         ChangePasswordView.as_view(),
-        name="change-password"
+        name="change-password",
     ),
 
 
@@ -129,22 +149,27 @@ urlpatterns = [
     # DELETE ACCOUNT
     # =========================================================
 
+    # ---------------------------------------------------------
     # DELETE /api/auth/profile/delete/
     #
     # Requires:
     # - Authentication
     # - Current password
     #
-    # Permanently deletes the User account.
+    # Permanently deletes the authenticated user's account.
     #
-    # UserActivity records remain because the UserActivity.user
-    # relationship uses SET_NULL.
+    # Related data is handled according to the model
+    # relationship configuration.
     #
+    # UserActivity records can remain because the
+    # UserActivity.user relationship uses SET_NULL.
+    #
+    # ---------------------------------------------------------
 
     path(
         "profile/delete/",
         DeleteAccountView.as_view(),
-        name="delete-account"
+        name="delete-account",
     ),
 ]
 
