@@ -73,6 +73,15 @@ function SearchBox() {
     useEffect(() => {
         const searchText = location.trim();
 
+        /*
+         * Keep the current working behaviour.
+         *
+         * Suggestions begin once the user has entered
+         * at least 2 characters, while Geoapify may return
+         * useful results from around 4 characters depending
+         * on the entered location.
+         */
+
         if (searchText.length < 2) {
             setLocationSuggestions([]);
             setShowLocationSuggestions(false);
@@ -118,9 +127,7 @@ function SearchBox() {
 
                 const data = await response.json();
 
-                const results = Array.isArray(
-                    data.results
-                )
+                const results = Array.isArray(data.results)
                     ? data.results
                     : [];
 
@@ -131,8 +138,7 @@ function SearchBox() {
                 );
             } catch (error) {
                 if (
-                    error.name ===
-                    "AbortError"
+                    error.name === "AbortError"
                 ) {
                     return;
                 }
@@ -187,24 +193,17 @@ function SearchBox() {
 
         setSelectedLocation({
             name: place.name || "",
-            formatted:
-                formattedLocation,
+            formatted: formattedLocation,
             city: place.city || "",
             state: place.state || "",
-            country:
-                place.country || "",
+            country: place.country || "",
             latitude,
             longitude,
-            placeId:
-                place.place_id || "",
+            placeId: place.place_id || "",
         });
 
-        setShowLocationSuggestions(
-            false
-        );
-
+        setShowLocationSuggestions(false);
         setLocationSuggestions([]);
-
         setError("");
     };
 
@@ -308,9 +307,7 @@ function SearchBox() {
        CHECK-IN CHANGE
     ========================================================= */
 
-    const handleCheckInChange = (
-        event
-    ) => {
+    const handleCheckInChange = (event) => {
         const selectedDate =
             event.target.value;
 
@@ -329,9 +326,7 @@ function SearchBox() {
        CHECK-OUT CHANGE
     ========================================================= */
 
-    const handleCheckOutChange = (
-        event
-    ) => {
+    const handleCheckOutChange = (event) => {
         const selectedDate =
             event.target.value;
 
@@ -486,19 +481,15 @@ function SearchBox() {
 
         /*
          * If the user selected a Geoapify suggestion,
-         * prefer the city as the Django text-search value.
+         * use the city as the Django search location.
          *
          * Example:
          *
-         * "Kochi, Ernakulam, Kerala, India"
+         * Kochi, Ernakulam, Kerala, India
          *
          * becomes:
          *
          * location=Kochi
-         *
-         * Coordinates are also sent so the backend can
-         * perform geographic searching when hotel coordinates
-         * are available.
          */
 
         const searchLocation =
@@ -547,10 +538,8 @@ function SearchBox() {
 
         if (
             selectedLocation &&
-            selectedLocation.latitude !==
-                null &&
-            selectedLocation.longitude !==
-                null
+            selectedLocation.latitude !== null &&
+            selectedLocation.longitude !== null
         ) {
             searchParams.set(
                 "latitude",
@@ -604,10 +593,9 @@ function SearchBox() {
                             );
 
                             /*
-                             * Once the user edits the
-                             * selected location, the
-                             * previous Geoapify selection
-                             * is no longer valid.
+                             * Editing the selected location
+                             * invalidates the previous
+                             * Geoapify selection.
                              */
 
                             setSelectedLocation(
@@ -1006,4 +994,3 @@ function SearchBox() {
 }
 
 export default SearchBox;
-

@@ -49,12 +49,82 @@ function Hotels() {
 
     const [hotels, setHotels] = useState([]);
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] =
+        useState(true);
 
-    const [error, setError] = useState("");
+    const [error, setError] =
+        useState("");
 
     const [sortBy, setSortBy] =
         useState("recommended");
+
+
+    // =========================================================
+    // PRICE FILTER STATE
+    // =========================================================
+
+    const [selectedPriceRanges, setSelectedPriceRanges] =
+        useState([]);
+
+
+    // =========================================================
+    // STAR RATING FILTER STATE
+    // =========================================================
+
+    const [selectedStarRatings, setSelectedStarRatings] =
+        useState([]);
+
+
+    // =========================================================
+    // PRICE FILTER OPTIONS
+    // =========================================================
+
+    const priceRanges = [
+        {
+            id: "under-2000",
+            label: "Under ₹2,000",
+            min: 0,
+            max: 2000,
+        },
+        {
+            id: "2000-5000",
+            label: "₹2,000 – ₹5,000",
+            min: 2000,
+            max: 5000,
+        },
+        {
+            id: "5000-10000",
+            label: "₹5,000 – ₹10,000",
+            min: 5000,
+            max: 10000,
+        },
+        {
+            id: "10000-plus",
+            label: "₹10,000+",
+            min: 10000,
+            max: Infinity,
+        },
+    ];
+
+
+    // =========================================================
+    // STAR RATING FILTER OPTIONS
+    // =========================================================
+
+    const starRatings = [
+        {
+            value: 5,
+            label: "★★★★★",
+        },
+        {
+            value: 4,
+            label: "★★★★",
+        },
+        {
+            value: 3,
+            label: "★★★",
+        },
+    ];
 
 
     // =========================================================
@@ -158,93 +228,95 @@ function Hotels() {
                 // NORMALIZE HOTEL DATA
                 // =================================================
 
-                const normalizedHotels = results
-                    .filter(
-                        (item) =>
-                            item &&
-                            typeof item === "object"
-                    )
-                    .map((item) => {
+                const normalizedHotels =
+                    results
+                        .filter(
+                            (item) =>
+                                item &&
+                                typeof item === "object"
+                        )
+                        .map((item) => {
 
-                        const hotel =
-                            item?.hotel &&
-                            typeof item.hotel === "object"
-                                ? item.hotel
-                                : item;
-
-
-                        return {
-
-                            ...hotel,
+                            const hotel =
+                                item?.hotel &&
+                                typeof item.hotel === "object"
+                                    ? item.hotel
+                                    : item;
 
 
-                            // ID
-                            id:
-                                hotel?.id ??
-                                item?.hotel_id ??
-                                item?.id ??
-                                null,
+                            return {
+
+                                ...hotel,
 
 
-                            // NAME
-                            name:
-                                hotel?.name ??
-                                item?.hotel_name ??
-                                "Hotel",
+                                // ID
+                                id:
+                                    hotel?.id ??
+                                    item?.hotel_id ??
+                                    item?.id ??
+                                    null,
 
 
-                            // CITY
-                            city:
-                                hotel?.city ??
-                                item?.city ??
-                                "",
+                                // NAME
+                                name:
+                                    hotel?.name ??
+                                    item?.hotel_name ??
+                                    "Hotel",
 
 
-                            // STATE
-                            state:
-                                hotel?.state ??
-                                item?.state ??
-                                "",
+                                // CITY
+                                city:
+                                    hotel?.city ??
+                                    item?.city ??
+                                    "",
 
 
-                            // DESCRIPTION
-                            description:
-                                hotel?.description ??
-                                item?.description ??
-                                "Comfortable accommodation for your stay.",
+                                // STATE
+                                state:
+                                    hotel?.state ??
+                                    item?.state ??
+                                    "",
 
 
-                            // RATING
-                            star_rating:
-                                hotel?.star_rating ??
-                                item?.star_rating ??
-                                0,
+                                // DESCRIPTION
+                                description:
+                                    hotel?.description ??
+                                    item?.description ??
+                                    "Comfortable accommodation for your stay.",
 
 
-                            // PRICE
-                            price_from:
-                                hotel?.price_from ??
-                                item?.price_from ??
-                                item?.starting_price ??
-                                item?.price ??
-                                0,
+                                // RATING
+                                star_rating:
+                                    hotel?.star_rating ??
+                                    item?.star_rating ??
+                                    0,
 
 
-                            // IMAGE
-                            image:
-                                hotel?.image ??
-                                hotel?.image_url ??
-                                item?.image ??
-                                item?.image_url ??
-                                item?.photo ??
-                                null,
+                                // PRICE
+                                price_from:
+                                    hotel?.price_from ??
+                                    item?.price_from ??
+                                    item?.starting_price ??
+                                    item?.price ??
+                                    0,
 
-                        };
 
-                    })
-                    .filter(
-                        (hotel) => hotel.id !== null
-                    );
+                                // IMAGE
+                                image:
+                                    hotel?.image ??
+                                    hotel?.image_url ??
+                                    item?.image ??
+                                    item?.image_url ??
+                                    item?.photo ??
+                                    null,
+
+                            };
+
+                        })
+                        .filter(
+                            (hotel) =>
+                                hotel.id !== null
+                        );
 
 
                 setHotels(normalizedHotels);
@@ -328,10 +400,66 @@ function Hotels() {
 
 
     // =========================================================
-    // CLEAR SORT
+    // PRICE FILTER CHANGE
+    // =========================================================
+
+    const handlePriceFilterChange = (rangeId) => {
+
+        setSelectedPriceRanges((current) => {
+
+            if (current.includes(rangeId)) {
+
+                return current.filter(
+                    (id) => id !== rangeId
+                );
+
+            }
+
+            return [
+                ...current,
+                rangeId,
+            ];
+
+        });
+
+    };
+
+
+    // =========================================================
+    // STAR FILTER CHANGE
+    // =========================================================
+
+    const handleStarFilterChange = (rating) => {
+
+        setSelectedStarRatings((current) => {
+
+            if (current.includes(rating)) {
+
+                return current.filter(
+                    (value) => value !== rating
+                );
+
+            }
+
+            return [
+                ...current,
+                rating,
+            ];
+
+        });
+
+    };
+
+
+    // =========================================================
+    // CLEAR FILTERS
     // =========================================================
 
     const handleClearFilters = () => {
+
+        setSelectedPriceRanges([]);
+
+        setSelectedStarRatings([]);
 
         setSortBy("recommended");
 
@@ -339,17 +467,121 @@ function Hotels() {
 
 
     // =========================================================
+    // FILTER HOTELS
+    // =========================================================
+
+    const filteredHotels = hotels.filter((hotel) => {
+
+        const hotelPrice =
+            Number(
+                hotel?.price_from || 0
+            );
+
+        const hotelRating =
+            Number(
+                hotel?.star_rating || 0
+            );
+
+
+        // =====================================================
+        // PRICE FILTER
+        // =====================================================
+
+        let matchesPrice = true;
+
+
+        if (
+            selectedPriceRanges.length > 0
+        ) {
+
+            matchesPrice =
+                selectedPriceRanges.some(
+                    (rangeId) => {
+
+                        const range =
+                            priceRanges.find(
+                                (item) =>
+                                    item.id === rangeId
+                            );
+
+
+                        if (!range) {
+                            return false;
+                        }
+
+
+                        if (
+                            range.max === Infinity
+                        ) {
+
+                            return (
+                                hotelPrice >=
+                                range.min
+                            );
+
+                        }
+
+
+                        return (
+                            hotelPrice >=
+                                range.min &&
+                            hotelPrice <
+                                range.max
+                        );
+
+                    }
+                );
+
+        }
+
+
+        // =====================================================
+        // STAR RATING FILTER
+        // =====================================================
+
+        let matchesRating = true;
+
+
+        if (
+            selectedStarRatings.length > 0
+        ) {
+
+            matchesRating =
+                selectedStarRatings.includes(
+                    hotelRating
+                );
+
+        }
+
+
+        // =====================================================
+        // FINAL RESULT
+        // =====================================================
+
+        return (
+            matchesPrice &&
+            matchesRating
+        );
+
+    });
+
+
+    // =========================================================
     // SORT HOTELS
     // =========================================================
 
-    const sortedHotels = [...hotels].sort(
-        (a, b) => {
+    const sortedHotels =
+        [...filteredHotels].sort((a, b) => {
 
             if (sortBy === "price-low") {
 
                 return (
-                    Number(a?.price_from || 0) -
-                    Number(b?.price_from || 0)
+                    Number(
+                        a?.price_from || 0
+                    ) -
+                    Number(
+                        b?.price_from || 0
+                    )
                 );
 
             }
@@ -358,8 +590,12 @@ function Hotels() {
             if (sortBy === "price-high") {
 
                 return (
-                    Number(b?.price_from || 0) -
-                    Number(a?.price_from || 0)
+                    Number(
+                        b?.price_from || 0
+                    ) -
+                    Number(
+                        a?.price_from || 0
+                    )
                 );
 
             }
@@ -368,8 +604,12 @@ function Hotels() {
             if (sortBy === "rating") {
 
                 return (
-                    Number(b?.star_rating || 0) -
-                    Number(a?.star_rating || 0)
+                    Number(
+                        b?.star_rating || 0
+                    ) -
+                    Number(
+                        a?.star_rating || 0
+                    )
                 );
 
             }
@@ -378,8 +618,7 @@ function Hotels() {
             // Recommended
             return 0;
 
-        }
-    );
+        });
 
 
     // =========================================================
@@ -465,7 +704,9 @@ function Hotels() {
                         <button
                             type="button"
                             className="modify-search-button"
-                            onClick={handleModifySearch}
+                            onClick={
+                                handleModifySearch
+                            }
                         >
 
                             <i className="bi bi-sliders"></i>
@@ -698,46 +939,49 @@ function Hotels() {
                         ERROR
                     ================================================= */}
 
-                    {!loading && error && (
+                    {!loading &&
+                        error && (
 
-                        <div className="hotels-error">
+                            <div className="hotels-error">
 
-                            <div className="hotels-state-icon">
+                                <div className="hotels-state-icon">
 
-                                <i className="bi bi-exclamation-triangle"></i>
+                                    <i className="bi bi-exclamation-triangle"></i>
+
+                                </div>
+
+
+                                <h2>
+                                    Something went wrong
+                                </h2>
+
+
+                                <p>
+                                    {error}
+                                </p>
+
+
+                                <button
+                                    type="button"
+                                    className="state-action-button"
+                                    onClick={
+                                        handleModifySearch
+                                    }
+                                >
+
+                                    <i className="bi bi-arrow-left"></i>
+
+                                    Back to Search
+
+                                </button>
 
                             </div>
 
-
-                            <h2>
-                                Something went wrong
-                            </h2>
-
-
-                            <p>
-                                {error}
-                            </p>
-
-
-                            <button
-                                type="button"
-                                className="state-action-button"
-                                onClick={handleModifySearch}
-                            >
-
-                                <i className="bi bi-arrow-left"></i>
-
-                                Back to Search
-
-                            </button>
-
-                        </div>
-
-                    )}
+                        )}
 
 
                     {/* =================================================
-                        NO RESULTS
+                        NO RESULTS FROM SEARCH
                     ================================================= */}
 
                     {!loading &&
@@ -768,7 +1012,9 @@ function Hotels() {
                                 <button
                                     type="button"
                                     className="state-action-button"
-                                    onClick={handleModifySearch}
+                                    onClick={
+                                        handleModifySearch
+                                    }
                                 >
 
                                     <i className="bi bi-search"></i>
@@ -828,7 +1074,9 @@ function Hotels() {
                                     </div>
 
 
-                                    {/* PRICE */}
+                                    {/* =================================================
+                                        PRICE FILTER
+                                    ================================================= */}
 
                                     <div className="filter-group">
 
@@ -837,53 +1085,45 @@ function Hotels() {
                                         </h4>
 
 
-                                        <div className="filter-option disabled">
+                                        {priceRanges.map(
+                                            (range) => (
 
-                                            <span className="custom-checkbox"></span>
+                                                <label
+                                                    className="filter-option"
+                                                    key={range.id}
+                                                >
 
-                                            <span>
-                                                Under ₹2,000
-                                            </span>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedPriceRanges.includes(
+                                                                range.id
+                                                            )
+                                                        }
+                                                        onChange={() =>
+                                                            handlePriceFilterChange(
+                                                                range.id
+                                                            )
+                                                        }
+                                                    />
 
-                                        </div>
+                                                    <span className="custom-checkbox"></span>
 
+                                                    <span>
+                                                        {range.label}
+                                                    </span>
 
-                                        <div className="filter-option disabled">
+                                                </label>
 
-                                            <span className="custom-checkbox"></span>
-
-                                            <span>
-                                                ₹2,000 – ₹5,000
-                                            </span>
-
-                                        </div>
-
-
-                                        <div className="filter-option disabled">
-
-                                            <span className="custom-checkbox"></span>
-
-                                            <span>
-                                                ₹5,000 – ₹10,000
-                                            </span>
-
-                                        </div>
-
-
-                                        <div className="filter-option disabled">
-
-                                            <span className="custom-checkbox"></span>
-
-                                            <span>
-                                                ₹10,000+
-                                            </span>
-
-                                        </div>
+                                            )
+                                        )}
 
                                     </div>
 
 
-                                    {/* STAR RATING */}
+                                    {/* =================================================
+                                        STAR RATING FILTER
+                                    ================================================= */}
 
                                     <div className="filter-group">
 
@@ -892,53 +1132,68 @@ function Hotels() {
                                         </h4>
 
 
-                                        <div className="filter-option disabled">
+                                        {starRatings.map(
+                                            (rating) => (
 
-                                            <span className="custom-checkbox"></span>
+                                                <label
+                                                    className="filter-option"
+                                                    key={
+                                                        rating.value
+                                                    }
+                                                >
 
-                                            <span>
-                                                ★★★★★
-                                            </span>
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={
+                                                            selectedStarRatings.includes(
+                                                                rating.value
+                                                            )
+                                                        }
+                                                        onChange={() =>
+                                                            handleStarFilterChange(
+                                                                rating.value
+                                                            )
+                                                        }
+                                                    />
 
-                                        </div>
+                                                    <span className="custom-checkbox"></span>
 
+                                                    <span
+                                                        className="star-filter-label"
+                                                    >
+                                                        {rating.label}
+                                                    </span>
 
-                                        <div className="filter-option disabled">
+                                                </label>
 
-                                            <span className="custom-checkbox"></span>
-
-                                            <span>
-                                                ★★★★
-                                            </span>
-
-                                        </div>
-
-
-                                        <div className="filter-option disabled">
-
-                                            <span className="custom-checkbox"></span>
-
-                                            <span>
-                                                ★★★
-                                            </span>
-
-                                        </div>
-
-                                    </div>
-
-
-                                    {/* INFO */}
-
-                                    <div className="filter-info">
-
-                                        <i className="bi bi-info-circle"></i>
-
-                                        <p>
-                                            More filters will
-                                            be available soon.
-                                        </p>
+                                            )
+                                        )}
 
                                     </div>
+
+
+                                    {/* =================================================
+                                        ACTIVE FILTER SUMMARY
+                                    ================================================= */}
+
+                                    {(selectedPriceRanges.length > 0 ||
+                                        selectedStarRatings.length > 0) && (
+
+                                        <div className="active-filter-summary">
+
+                                            <i className="bi bi-funnel-fill"></i>
+
+                                            <span>
+                                                {sortedHotels.length}{" "}
+                                                {sortedHotels.length === 1
+                                                    ? "hotel"
+                                                    : "hotels"}{" "}
+                                                matching filters
+                                            </span>
+
+                                        </div>
+
+                                    )}
 
                                 </aside>
 
@@ -1021,29 +1276,76 @@ function Hotels() {
 
 
                                     {/* =================================================
-                                        HOTEL LIST
+                                        NO MATCHING FILTER RESULTS
                                     ================================================= */}
 
-                                    <div className="hotels-list">
+                                    {sortedHotels.length === 0 ? (
 
-                                        {sortedHotels.map(
-                                            (hotel, index) => (
+                                        <div className="no-hotels">
 
-                                                <HotelCard
-                                                    key={
-                                                        hotel.id ??
-                                                        `hotel-${index}`
-                                                    }
-                                                    hotel={hotel}
-                                                    onViewDetails={
-                                                        handleViewDetails
-                                                    }
-                                                />
+                                            <div className="hotels-state-icon">
 
-                                            )
-                                        )}
+                                                <i className="bi bi-funnel"></i>
 
-                                    </div>
+                                            </div>
+
+
+                                            <h2>
+                                                No hotels match your filters
+                                            </h2>
+
+
+                                            <p>
+                                                Try removing some
+                                                filters to see more
+                                                available hotels.
+                                            </p>
+
+
+                                            <button
+                                                type="button"
+                                                className="state-action-button"
+                                                onClick={
+                                                    handleClearFilters
+                                                }
+                                            >
+
+                                                <i className="bi bi-x-circle"></i>
+
+                                                Clear Filters
+
+                                            </button>
+
+                                        </div>
+
+                                    ) : (
+
+                                        /* =================================================
+                                            HOTEL LIST
+                                        ================================================= */
+
+                                        <div className="hotels-list">
+
+                                            {sortedHotels.map(
+                                                (hotel, index) => (
+
+                                                    <HotelCard
+                                                        key={
+                                                            hotel.id ??
+                                                            `hotel-${index}`
+                                                        }
+                                                        hotel={hotel}
+                                                        onViewDetails={
+                                                            handleViewDetails
+                                                        }
+                                                    />
+
+                                                )
+                                            )}
+
+                                        </div>
+
+                                    )}
 
                                 </div>
 
@@ -1058,7 +1360,9 @@ function Hotels() {
         </div>
 
     );
+
 }
 
 
 export default Hotels;
+
