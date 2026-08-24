@@ -76,8 +76,8 @@ class Hotel(models.Model):
         default=True
     )
 
-    # Allows admin to control whether this hotel
-    # appears in the Featured Hotels section
+    # Controls whether this hotel appears
+    # in the Featured Hotels section.
     is_featured = models.BooleanField(
         default=False
     )
@@ -106,7 +106,11 @@ class Room(models.Model):
         ("suite", "Suite"),
     ]
 
-    # Each room belongs to exactly one hotel
+    # Each room belongs to exactly one hotel.
+    #
+    # CASCADE means:
+    # If a hotel is permanently deleted,
+    # its rooms are deleted as well.
     hotel = models.ForeignKey(
         Hotel,
         on_delete=models.CASCADE,
@@ -126,10 +130,7 @@ class Room(models.Model):
         blank=True
     )
 
-    # =====================================================
-    # ROOM IMAGE
-    # =====================================================
-
+    # Room-specific image
     image = models.ImageField(
         upload_to="rooms/",
         blank=True,
@@ -157,7 +158,8 @@ class Room(models.Model):
     )
 
     # Administrative availability.
-    # Date-based availability is calculated from bookings.
+    # Date-based availability is calculated
+    # from bookings.
     is_available = models.BooleanField(
         default=True
     )
@@ -197,27 +199,29 @@ class Booking(models.Model):
     #
     # CASCADE is intentional.
     #
-    # When a user permanently deletes their account,
-    # their bookings are also permanently deleted.
+    # When a User account is permanently deleted:
     #
-    # This supports the BookingX account-deletion flow
-    # where user-related data is permanently removed.
+    # User
+    #   └── Bookings → permanently deleted
     #
-    # The Room itself is NOT deleted because the
-    # Booking.room relationship below uses PROTECT.
-    # =====================================================
-
+    # The associated Room and Hotel remain intact because
+    # this relationship only belongs to the User.
+    #
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="bookings"
     )
 
-    # Booking is made against a specific room.
-    # The hotel's identity is obtained through:
+    # =====================================================
+    # BOOKED ROOM
+    # =====================================================
     #
-    # booking.room.hotel
-
+    # PROTECT prevents a Room from being deleted while
+    # bookings still reference it.
+    #
+    # This protects historical booking integrity.
+    #
     room = models.ForeignKey(
         Room,
         on_delete=models.PROTECT,
@@ -272,7 +276,7 @@ class Booking(models.Model):
         Validate booking data before saving.
         """
 
-        # Check-in cannot be after or equal to check-out.
+        # Check-out must be after check-in.
         if self.check_in and self.check_out:
 
             if self.check_out <= self.check_in:
@@ -281,16 +285,18 @@ class Booking(models.Model):
                         "Check-out date must be after check-in date."
                 })
 
-        # Guests must be at least 1.
+        # At least one guest is required.
         if self.guests < 1:
             raise ValidationError({
                 "guests":
                     "At least one guest is required."
             })
 
-        # Make sure the selected room can accommodate
-        # the requested number of guests.
-        if self.room_id and self.guests > self.room.max_guests:
+        # Verify room capacity.
+        if (
+            self.room_id
+            and self.guests > self.room.max_guests
+        ):
             raise ValidationError({
                 "guests":
                     "The selected room cannot accommodate "
@@ -310,7 +316,9 @@ class Booking(models.Model):
         if not self.check_in or not self.check_out:
             return 0
 
-        return (self.check_out - self.check_in).days
+        return (
+            self.check_out - self.check_in
+        ).days
 
     # =====================================================
     # CHECK WHETHER BOOKING HAS PASSED CHECKOUT DATE
@@ -321,9 +329,6 @@ class Booking(models.Model):
         """
         Returns True when the booking's checkout date
         has already passed.
-
-        This works even if the booking status has not yet
-        been changed to 'completed'.
         """
 
         if not self.check_out:
@@ -332,7 +337,7 @@ class Booking(models.Model):
         return self.check_out < timezone.localdate()
 
     # =====================================================
-    # CHECK WHETHER BOOKING IS ACTIVE
+    # CHECK WHETHER BOOKING IS CURRENTLY ACTIVE
     # =====================================================
 
     @property
