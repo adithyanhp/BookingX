@@ -9,6 +9,13 @@ import {
 const AuthContext = createContext(null);
 
 
+// =========================================================
+// API BASE URL
+// =========================================================
+
+const API_BASE_URL = "http://127.0.0.1:8000/api";
+
+
 export function AuthProvider({ children }) {
 
     const [isAuthenticated, setIsAuthenticated] =
@@ -85,13 +92,57 @@ export function AuthProvider({ children }) {
     // LOGOUT
     // =========================================================
     //
-    // This is also used after permanent account deletion.
+    // 1. Send logout request to Django
+    // 2. Django creates UserActivity(LOGOUT)
+    // 3. Remove JWT tokens from browser
+    // 4. Update authentication state
     //
-    // It removes both JWT tokens and immediately updates
-    // the authentication state.
+    // Even if the backend request fails, the user is still
+    // logged out locally.
     // =========================================================
 
-    const logout = () => {
+    const logout = async () => {
+
+        const accessToken =
+            localStorage.getItem("access_token");
+
+
+        // -----------------------------------------------------
+        // RECORD LOGOUT ACTIVITY IN DJANGO
+        // -----------------------------------------------------
+
+        if (accessToken) {
+
+            try {
+
+                await fetch(
+                    `${API_BASE_URL}/auth/logout/`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${accessToken}`,
+                        },
+                    }
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Logout activity could not be recorded:",
+                    error
+                );
+            }
+        }
+
+
+        // -----------------------------------------------------
+        // REMOVE JWT TOKENS
+        // -----------------------------------------------------
 
         localStorage.removeItem(
             "access_token"
@@ -101,6 +152,10 @@ export function AuthProvider({ children }) {
             "refresh_token"
         );
 
+
+        // -----------------------------------------------------
+        // UPDATE AUTHENTICATION STATE
+        // -----------------------------------------------------
 
         setIsAuthenticated(false);
     };

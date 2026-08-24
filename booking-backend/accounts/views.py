@@ -8,9 +8,14 @@ from rest_framework.parsers import (
     JSONParser,
 )
 
+from rest_framework_simplejwt.serializers import (
+    TokenObtainPairSerializer,
+)
+
 from .models import (
     UserProfile,
     PasswordChangeLog,
+    UserActivity,
 )
 
 from .serializers import (
@@ -21,8 +26,174 @@ from .serializers import (
 
 
 # =========================================================
+# HELPER FUNCTIONS
+# =========================================================
+
+
+def get_client_ip(request):
+    """
+    Get the client's IP address.
+
+    Supports deployments where the application is behind
+    a proxy or load balancer.
+    """
+
+    forwarded_for = request.META.get(
+        "HTTP_X_FORWARDED_FOR"
+    )
+
+    if forwarded_for:
+        return forwarded_for.split(",")[0].strip()
+
+    return request.META.get(
+        "REMOTE_ADDR"
+    )
+
+
+def get_user_agent(request):
+    """
+    Get the browser/device user-agent string.
+    """
+
+    return request.META.get(
+        "HTTP_USER_AGENT",
+        ""
+    )
+
+
+def create_activity_log(
+    request,
+    user,
+    action
+):
+    """
+    Create a user authentication activity log.
+
+    The password or JWT tokens are never stored.
+    """
+
+    UserActivity.objects.create(
+        user=user,
+        action=action,
+        ip_address=get_client_ip(request),
+        user_agent=get_user_agent(request),
+    )
+
+
+# =========================================================
+# LOGIN
+# =========================================================
+# POST -> Login user and generate JWT tokens
+#
+# Endpoint:
+# /api/auth/login/
+#
+# Request body:
+# {
+#     "username": "...",
+#     "password": "..."
+# }
+#
+# Successful login is recorded in UserActivity.
+# =========================================================
+
+
+class LoginView(APIView):
+
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+
+        serializer = TokenObtainPairSerializer(
+            data=request.data
+        )
+
+        # -------------------------------------------------
+        # VALIDATE LOGIN CREDENTIALS
+        # -------------------------------------------------
+
+        if not serializer.is_valid():
+
+            return Response(
+                serializer.errors,
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # -------------------------------------------------
+        # GET AUTHENTICATED USER
+        # -------------------------------------------------
+
+        user = serializer.user
+
+        # -------------------------------------------------
+        # CREATE LOGIN ACTIVITY LOG
+        # -------------------------------------------------
+
+        create_activity_log(
+            request=request,
+            user=user,
+            action="LOGIN",
+        )
+
+        # -------------------------------------------------
+        # RETURN JWT TOKENS
+        # -------------------------------------------------
+
+        return Response(
+            serializer.validated_data,
+            status=status.HTTP_200_OK,
+        )
+
+
+# =========================================================
+# LOGOUT
+# =========================================================
+# POST -> Record logout activity
+#
+# Endpoint:
+# /api/auth/logout/
+#
+# IMPORTANT:
+# JWT authentication is stateless.
+#
+# This endpoint records that the authenticated user
+# requested logout.
+#
+# The frontend must remove the access and refresh tokens.
+# =========================================================
+
+
+class LogoutView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+
+        user = request.user
+
+        # -------------------------------------------------
+        # CREATE LOGOUT ACTIVITY LOG
+        # -------------------------------------------------
+
+        create_activity_log(
+            request=request,
+            user=user,
+            action="LOGOUT",
+        )
+
+        return Response(
+            {
+                "detail":
+                    "Logout recorded successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# =========================================================
 # REGISTRATION
 # =========================================================
+
 
 class RegisterView(generics.CreateAPIView):
 
@@ -39,6 +210,7 @@ class RegisterView(generics.CreateAPIView):
 # Endpoint:
 # /api/auth/profile/
 # =========================================================
+
 
 class ProfileView(generics.RetrieveUpdateAPIView):
 
@@ -71,6 +243,7 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 # /api/auth/profile/password/
 # =========================================================
 
+
 class ChangePasswordView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -85,7 +258,7 @@ class ChangePasswordView(APIView):
         )
 
         # -------------------------------------------------
-        # Validate password information
+        # VALIDATE PASSWORD INFORMATION
         # -------------------------------------------------
 
         if serializer.is_valid():
@@ -93,7 +266,7 @@ class ChangePasswordView(APIView):
             user = request.user
 
             # ---------------------------------------------
-            # Set new password
+            # SET NEW PASSWORD
             # ---------------------------------------------
 
             user.set_password(
@@ -108,14 +281,16 @@ class ChangePasswordView(APIView):
             # CREATE PASSWORD CHANGE AUDIT LOG
             # ---------------------------------------------
             #
-            # The password itself is NEVER stored.
+            # Password itself is NEVER stored.
             #
-            # Since this endpoint allows an authenticated
-            # user to change their own password:
+            # user:
+            #     Account whose password changed.
             #
-            # user       -> account whose password changed
-            # changed_by -> authenticated user
-            # change_type -> USER
+            # changed_by:
+            #     Authenticated user who performed the change.
+            #
+            # change_type:
+            #     USER
             #
 
             PasswordChangeLog.objects.create(
@@ -126,13 +301,14 @@ class ChangePasswordView(APIView):
 
             return Response(
                 {
-                    "detail": "Password changed successfully.",
+                    "detail":
+                        "Password changed successfully.",
                 },
                 status=status.HTTP_200_OK,
             )
 
         # -------------------------------------------------
-        # Validation errors
+        # VALIDATION ERRORS
         # -------------------------------------------------
 
         return Response(
@@ -156,12 +332,13 @@ class ChangePasswordView(APIView):
 # }
 #
 # IMPORTANT:
-# - Only the authenticated user can delete their own account.
+# - Only the authenticated user can delete their account.
 # - Current password is verified on the backend.
-# - The password is never stored.
-# - The User object is permanently deleted.
-# - Related objects follow their model's on_delete rules.
+# - Password is never stored.
+# - User is permanently deleted.
+# - Related objects follow their on_delete rules.
 # =========================================================
+
 
 class DeleteAccountView(APIView):
 
@@ -187,7 +364,8 @@ class DeleteAccountView(APIView):
 
             return Response(
                 {
-                    "detail": "Current password is required."
+                    "detail":
+                        "Current password is required."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -196,11 +374,14 @@ class DeleteAccountView(APIView):
         # VERIFY CURRENT PASSWORD
         # -------------------------------------------------
 
-        if not user.check_password(current_password):
+        if not user.check_password(
+            current_password
+        ):
 
             return Response(
                 {
-                    "detail": "Current password is incorrect."
+                    "detail":
+                        "Current password is incorrect."
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -209,20 +390,33 @@ class DeleteAccountView(APIView):
         # PERMANENT ACCOUNT DELETION
         # -------------------------------------------------
         #
-        # Django will apply the on_delete behaviour defined
+        # Django applies the on_delete behaviour defined
         # on related models.
         #
-        # IMPORTANT:
-        # Do not manually delete bookings here until we
-        # inspect the Booking model's relationship with User.
-        # We want to preserve the correct booking behaviour.
+        # Booking.user:
+        #     CASCADE
+        #
+        # UserProfile.user:
+        #     CASCADE
+        #
+        # UserActivity.user:
+        #     SET_NULL
+        #
+        # Therefore:
+        #
+        # - User account is permanently deleted.
+        # - User's bookings are deleted.
+        # - User profile is deleted.
+        # - Login/logout activity remains.
+        # - Activity's user field becomes NULL.
         #
 
         user.delete()
 
         return Response(
             {
-                "detail": "Your account has been permanently deleted."
+                "detail":
+                    "Your account has been permanently deleted."
             },
             status=status.HTTP_200_OK,
         )
@@ -231,4 +425,3 @@ class DeleteAccountView(APIView):
 # =========================================================
 # END OF VIEWS
 # =========================================================
-

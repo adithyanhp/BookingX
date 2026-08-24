@@ -22,6 +22,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
+
         model = User
 
         fields = [
@@ -31,7 +32,37 @@ class RegisterSerializer(serializers.ModelSerializer):
             "password2",
         ]
 
+    # =====================================================
+    # VALIDATE REGISTRATION DATA
+    # =====================================================
+
     def validate(self, data):
+
+        # -------------------------------------------------
+        # Normalize username
+        # -------------------------------------------------
+
+        data["username"] = data["username"].strip()
+
+        if not data["username"]:
+
+            raise serializers.ValidationError({
+                "username":
+                    "Username cannot be empty."
+            })
+
+        # -------------------------------------------------
+        # Normalize email
+        # -------------------------------------------------
+
+        data["email"] = data["email"].strip()
+
+        if not data["email"]:
+
+            raise serializers.ValidationError({
+                "email":
+                    "Email address cannot be empty."
+            })
 
         # -------------------------------------------------
         # Check password confirmation
@@ -39,12 +70,10 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if data["password"] != data["password2"]:
 
-            raise serializers.ValidationError(
-                {
-                    "password":
+            raise serializers.ValidationError({
+                "password":
                     "Passwords do not match."
-                }
-            )
+            })
 
         # -------------------------------------------------
         # Check username
@@ -54,12 +83,10 @@ class RegisterSerializer(serializers.ModelSerializer):
             username=data["username"]
         ).exists():
 
-            raise serializers.ValidationError(
-                {
-                    "username":
+            raise serializers.ValidationError({
+                "username":
                     "Username already exists."
-                }
-            )
+            })
 
         # -------------------------------------------------
         # Check email
@@ -69,14 +96,24 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=data["email"]
         ).exists():
 
-            raise serializers.ValidationError(
-                {
-                    "email":
+            raise serializers.ValidationError({
+                "email":
                     "Email already exists."
-                }
-            )
+            })
+
+        # -------------------------------------------------
+        # Django password validation
+        # -------------------------------------------------
+
+        validate_password(
+            data["password"]
+        )
 
         return data
+
+    # =====================================================
+    # CREATE USER
+    # =====================================================
 
     def create(self, validated_data):
 
@@ -310,12 +347,10 @@ class ChangePasswordSerializer(
             data["current_password"]
         ):
 
-            raise serializers.ValidationError(
-                {
-                    "current_password":
+            raise serializers.ValidationError({
+                "current_password":
                     "Current password is incorrect."
-                }
-            )
+            })
 
         # -------------------------------------------------
         # Check new password confirmation
@@ -326,12 +361,10 @@ class ChangePasswordSerializer(
             != data["new_password2"]
         ):
 
-            raise serializers.ValidationError(
-                {
-                    "new_password":
+            raise serializers.ValidationError({
+                "new_password":
                     "New passwords do not match."
-                }
-            )
+            })
 
         # -------------------------------------------------
         # Prevent using the same password
@@ -341,12 +374,10 @@ class ChangePasswordSerializer(
             data["new_password"]
         ):
 
-            raise serializers.ValidationError(
-                {
-                    "new_password":
+            raise serializers.ValidationError({
+                "new_password":
                     "New password must be different from your current password."
-                }
-            )
+            })
 
         # -------------------------------------------------
         # Django password validation

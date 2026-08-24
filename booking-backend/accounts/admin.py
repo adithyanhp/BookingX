@@ -1,6 +1,5 @@
 from django.contrib import admin, messages
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import AdminPasswordChangeForm
 from django.contrib.auth.models import User
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.admin.options import IS_POPUP_VAR
@@ -18,6 +17,7 @@ from django.views.decorators.csrf import csrf_protect
 from .models import (
     UserProfile,
     PasswordChangeLog,
+    UserActivity,
 )
 
 
@@ -36,6 +36,10 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = (
         "user__username",
         "user__email",
+    )
+
+    ordering = (
+        "user__username",
     )
 
 
@@ -78,6 +82,60 @@ class PasswordChangeLogAdmin(admin.ModelAdmin):
 
 
 # =========================================================
+# USER AUTHENTICATION ACTIVITY ADMIN
+# =========================================================
+#
+# Shows:
+# - User
+# - Login / Logout
+# - Date and time
+# - IP address
+# - Browser / device information
+#
+# UserActivity uses SET_NULL for the User relationship,
+# so authentication history remains available even after
+# the user permanently deletes their account.
+# =========================================================
+
+@admin.register(UserActivity)
+class UserActivityAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "user",
+        "action",
+        "timestamp",
+        "ip_address",
+        "user_agent",
+    )
+
+    list_filter = (
+        "action",
+        "timestamp",
+    )
+
+    search_fields = (
+        "user__username",
+        "user__email",
+        "ip_address",
+        "user_agent",
+    )
+
+    ordering = (
+        "-timestamp",
+    )
+
+    readonly_fields = (
+        "user",
+        "action",
+        "timestamp",
+        "ip_address",
+        "user_agent",
+    )
+
+    list_per_page = 25
+
+
+# =========================================================
 # CUSTOM USER ADMIN
 # =========================================================
 
@@ -98,9 +156,9 @@ class CustomUserAdmin(BaseUserAdmin):
         """
         Custom Django Admin password-change flow.
 
-        This keeps Django's normal password-change form,
-        but creates a PasswordChangeLog after the password
-        has actually been saved successfully.
+        Uses Django's built-in password-change form and
+        creates a PasswordChangeLog after the password
+        has been successfully changed.
         """
 
         # -------------------------------------------------
@@ -141,7 +199,7 @@ class CustomUserAdmin(BaseUserAdmin):
             if form.is_valid():
 
                 # -----------------------------------------
-                # Check which action was submitted
+                # Check valid password action
                 # -----------------------------------------
 
                 valid_submission = (
@@ -172,7 +230,7 @@ class CustomUserAdmin(BaseUserAdmin):
                 user = form.save()
 
                 # -----------------------------------------
-                # CREATE PASSWORD CHANGE AUDIT LOG
+                # CREATE PASSWORD AUDIT LOG
                 # -----------------------------------------
 
                 PasswordChangeLog.objects.create(
@@ -182,7 +240,7 @@ class CustomUserAdmin(BaseUserAdmin):
                 )
 
                 # -----------------------------------------
-                # Django's normal admin success message
+                # SUCCESS MESSAGE
                 # -----------------------------------------
 
                 if user.has_usable_password():
@@ -204,16 +262,22 @@ class CustomUserAdmin(BaseUserAdmin):
                 )
 
                 # -----------------------------------------
-                # Keep the logged-in admin session active
+                # KEEP ADMIN SESSION ACTIVE
+                # -----------------------------------------
+                #
+                # Only necessary when the admin changes
+                # their own password.
                 # -----------------------------------------
 
-                update_session_auth_hash(
-                    request,
-                    form.user
-                )
+                if user.pk == request.user.pk:
+
+                    update_session_auth_hash(
+                        request,
+                        user
+                    )
 
                 # -----------------------------------------
-                # Return to user change page
+                # RETURN TO USER CHANGE PAGE
                 # -----------------------------------------
 
                 return HttpResponseRedirect(
@@ -237,7 +301,7 @@ class CustomUserAdmin(BaseUserAdmin):
             form = self.change_password_form(user)
 
         # -------------------------------------------------
-        # Build Django Admin form
+        # BUILD ADMIN FORM
         # -------------------------------------------------
 
         fieldsets = [
@@ -258,7 +322,7 @@ class CustomUserAdmin(BaseUserAdmin):
         )
 
         # -------------------------------------------------
-        # Page title
+        # PAGE TITLE
         # -------------------------------------------------
 
         if user.has_usable_password():
@@ -274,10 +338,11 @@ class CustomUserAdmin(BaseUserAdmin):
             )
 
         # -------------------------------------------------
-        # Template context
+        # TEMPLATE CONTEXT
         # -------------------------------------------------
 
         context = {
+
             "title": title % escape(
                 user.get_username()
             ),
@@ -331,8 +396,11 @@ class CustomUserAdmin(BaseUserAdmin):
 # =========================================================
 
 try:
+
     admin.site.unregister(User)
+
 except admin.sites.NotRegistered:
+
     pass
 
 
@@ -340,4 +408,3 @@ admin.site.register(
     User,
     CustomUserAdmin
 )
-

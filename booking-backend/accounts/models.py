@@ -86,4 +86,89 @@ class PasswordChangeLog(models.Model):
             f"{self.changed_at:%Y-%m-%d %H:%M}"
         )
 
+
+# =========================================================
+# USER AUTHENTICATION ACTIVITY LOG
+# =========================================================
+
+class UserActivity(models.Model):
+
+    ACTION_CHOICES = [
+        ("LOGIN", "Login"),
+        ("LOGOUT", "Logout"),
+    ]
+
+    # -----------------------------------------------------
+    # User associated with this activity
+    #
+    # SET_NULL is intentional.
+    #
+    # If the user permanently deletes their account,
+    # the authentication history remains available in
+    # Django Admin.
+    #
+    # The user relationship becomes NULL instead of
+    # deleting the activity history.
+    # -----------------------------------------------------
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="activity_logs"
+    )
+
+    # -----------------------------------------------------
+    # Authentication action
+    # -----------------------------------------------------
+
+    action = models.CharField(
+        max_length=10,
+        choices=ACTION_CHOICES
+    )
+
+    # -----------------------------------------------------
+    # When the activity occurred
+    # -----------------------------------------------------
+
+    timestamp = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    # -----------------------------------------------------
+    # IP address
+    # -----------------------------------------------------
+
+    ip_address = models.GenericIPAddressField(
+        null=True,
+        blank=True
+    )
+
+    # -----------------------------------------------------
+    # Browser / device information
+    # -----------------------------------------------------
+
+    user_agent = models.TextField(
+        blank=True
+    )
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "User Activity"
+        verbose_name_plural = "User Activities"
+
+    def __str__(self):
+
+        username = (
+            self.user.username
+            if self.user
+            else "Deleted User"
+        )
+
+        return (
+            f"{username} - "
+            f"{self.get_action_display()} - "
+            f"{self.timestamp:%Y-%m-%d %H:%M:%S}"
+        )
     
