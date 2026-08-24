@@ -2,6 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+# =========================================================
+# USER PROFILE
+# =========================================================
+
 class UserProfile(models.Model):
 
     user = models.OneToOneField(
@@ -20,6 +24,10 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+# =========================================================
+# PASSWORD CHANGE LOG
+# =========================================================
+
 class PasswordChangeLog(models.Model):
 
     CHANGE_TYPE_CHOICES = [
@@ -27,14 +35,20 @@ class PasswordChangeLog(models.Model):
         ("ADMIN", "Admin"),
     ]
 
+    # -----------------------------------------------------
     # User whose password was changed
+    # -----------------------------------------------------
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="password_change_logs"
     )
 
+    # -----------------------------------------------------
     # User/admin who performed the password change
+    # -----------------------------------------------------
+
     changed_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -43,12 +57,18 @@ class PasswordChangeLog(models.Model):
         related_name="password_changes_performed"
     )
 
+    # -----------------------------------------------------
     # When the password was changed
+    # -----------------------------------------------------
+
     changed_at = models.DateTimeField(
         auto_now_add=True
     )
 
+    # -----------------------------------------------------
     # How the password was changed
+    # -----------------------------------------------------
+
     change_type = models.CharField(
         max_length=10,
         choices=CHANGE_TYPE_CHOICES

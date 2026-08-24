@@ -306,21 +306,11 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-
-    /* Explicit horizontal spacing between buttons */
     column-gap: 20px;
-
-    /* Prevent buttons from touching */
     row-gap: 14px;
-
     flex-shrink: 0;
     margin-left: auto;
 }
-
-
-/* =========================================================
-   COMMON FOOTER BUTTON BEHAVIOR
-========================================================= */
 
 .profile-actions .profile-action-button {
     flex-shrink: 0;
@@ -366,6 +356,468 @@
 
 .profile-bookings-button:hover i:last-child {
     transform: translateX(3px);
+}
+
+
+/* =========================================================
+   DELETE ACCOUNT / DANGER ZONE
+========================================================= */
+
+.profile-danger-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    margin-top: 24px;
+    padding: 24px 30px;
+    background: #ffffff;
+    border: 1px solid #f1d5d8;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(31, 41, 55, 0.04);
+}
+
+.profile-danger-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.profile-danger-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: #fff1f2;
+    color: #dc3545;
+    font-size: 20px;
+}
+
+.profile-danger-content h3 {
+    margin: 0 0 5px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+}
+
+.profile-danger-content p {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: #8b929c;
+}
+
+
+/* =========================================================
+   DELETE ACCOUNT BUTTON
+========================================================= */
+
+.profile-delete-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    flex-shrink: 0;
+    padding: 0 18px;
+    border: 1px solid #dc3545;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #dc3545;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-delete-button:hover {
+    background: #dc3545;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 20px rgba(220, 53, 69, 0.20);
+}
+
+
+/* =========================================================
+   DELETE ACCOUNT MODAL OVERLAY
+========================================================= */
+
+.profile-delete-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(17, 24, 39, 0.62);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    animation: profileModalOverlayIn 0.2s ease;
+}
+
+@keyframes profileModalOverlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   DELETE ACCOUNT MODAL
+========================================================= */
+
+.profile-delete-modal {
+    width: 100%;
+    max-width: 500px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow:
+        0 25px 70px rgba(17, 24, 39, 0.25);
+    animation: profileModalIn 0.25s ease;
+}
+
+@keyframes profileModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.profile-delete-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 28px 30px 0;
+}
+
+.profile-delete-modal-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    background: #fff1f2;
+    color: #dc3545;
+    font-size: 22px;
+}
+
+.profile-delete-modal-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #9ca3af;
+    font-size: 15px;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.profile-delete-modal-close:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.profile-delete-modal-close:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   MODAL CONTENT
+========================================================= */
+
+.profile-delete-modal-content {
+    padding: 20px 30px 30px;
+}
+
+.profile-delete-modal-content h2 {
+    margin: 0 0 10px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.profile-delete-modal-content > p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.7;
+    color: #6b7280;
+}
+
+
+/* =========================================================
+   DELETE WARNING
+========================================================= */
+
+.profile-delete-warning {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 18px;
+    padding: 13px 14px;
+    border: 1px solid #f6d5d9;
+    border-radius: 10px;
+    background: #fff7f7;
+    color: #b42333;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.profile-delete-warning i {
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   DELETE FORM
+========================================================= */
+
+.profile-delete-form {
+    margin-top: 24px;
+}
+
+.profile-delete-form > label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+}
+
+
+/* =========================================================
+   PASSWORD INPUT
+========================================================= */
+
+.profile-password-wrapper {
+    position: relative;
+}
+
+.profile-password-wrapper input {
+    width: 100%;
+    height: 48px;
+    padding: 0 48px 0 14px;
+    border: 1px solid #d9dee7;
+    border-radius: 10px;
+    outline: none;
+    background: #ffffff;
+    color: #1f2937;
+    font-size: 14px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.profile-password-wrapper input::placeholder {
+    color: #a0a7b2;
+}
+
+.profile-password-wrapper input:focus {
+    border-color: #6c63ff;
+    box-shadow:
+        0 0 0 3px rgba(108, 99, 255, 0.10);
+}
+
+.profile-password-wrapper input:disabled {
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   PASSWORD TOGGLE
+========================================================= */
+
+.profile-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-50%);
+    border: none;
+    border-radius: 7px;
+    background: transparent;
+    color: #8b929c;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+}
+
+.profile-password-toggle:hover {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.profile-password-toggle:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   DELETE ERROR
+========================================================= */
+
+.profile-delete-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fff1f2;
+    color: #c6283a;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.profile-delete-error i {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+========================================================= */
+
+.profile-delete-modal-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+
+/* =========================================================
+   CANCEL BUTTON
+========================================================= */
+
+.profile-delete-cancel-button {
+    min-height: 46px;
+    padding: 0 18px;
+    border: 1px solid #d9dee7;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.profile-delete-cancel-button:hover {
+    background: #f9fafb;
+    border-color: #c7ccd5;
+}
+
+.profile-delete-cancel-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   CONFIRM DELETE BUTTON
+========================================================= */
+
+.profile-delete-confirm-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 18px;
+    border: none;
+    border-radius: 10px;
+    background: #dc3545;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.profile-delete-confirm-button:hover:not(:disabled) {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow:
+        0 7px 18px rgba(220, 53, 69, 0.22);
+}
+
+.profile-delete-confirm-button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   DELETE SPINNER
+========================================================= */
+
+.profile-delete-spinner {
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255, 255, 255, 0.45);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: profileDeleteSpin 0.7s linear infinite;
+}
+
+@keyframes profileDeleteSpin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 
@@ -512,6 +964,10 @@
     .profile-actions {
         column-gap: 18px;
     }
+
+    .profile-danger-card {
+        padding: 22px 24px;
+    }
 }
 
 
@@ -596,15 +1052,71 @@
         width: 100%;
         display: flex;
         flex-direction: column;
-
-        /* Clear vertical spacing on mobile */
         gap: 14px;
-
         margin-left: 0;
     }
 
     .profile-bookings-button,
     .profile-actions .profile-edit-button {
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       MOBILE DANGER ZONE
+    ===================================================== */
+
+    .profile-danger-card {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+        margin-top: 20px;
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    .profile-danger-content {
+        align-items: flex-start;
+    }
+
+    .profile-delete-button {
+        width: 100%;
+    }
+
+
+    /* =====================================================
+       MOBILE MODAL
+    ===================================================== */
+
+    .profile-delete-modal-overlay {
+        align-items: flex-end;
+        padding: 12px;
+    }
+
+    .profile-delete-modal {
+        max-height: calc(100vh - 24px);
+        border-radius: 18px;
+    }
+
+    .profile-delete-modal-header {
+        padding: 22px 20px 0;
+    }
+
+    .profile-delete-modal-content {
+        padding: 18px 20px 24px;
+    }
+
+    .profile-delete-modal-content h2 {
+        font-size: 21px;
+    }
+
+    .profile-delete-modal-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .profile-delete-cancel-button,
+    .profile-delete-confirm-button {
         width: 100%;
     }
 }
@@ -653,6 +1165,20 @@
 
     .profile-actions {
         gap: 14px;
+    }
+
+    .profile-danger-card {
+        padding: 18px;
+    }
+
+    .profile-danger-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .profile-delete-modal-content {
+        padding-left: 17px;
+        padding-right: 17px;
     }
 }
 

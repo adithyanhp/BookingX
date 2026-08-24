@@ -10,10 +10,13 @@ async function refreshAccessToken() {
     const refreshToken =
         localStorage.getItem("refresh_token");
 
+
     // No refresh token available
+
     if (!refreshToken) {
         return null;
     }
+
 
     try {
 
@@ -32,7 +35,9 @@ async function refreshAccessToken() {
             }
         );
 
+
         // Refresh token is invalid or expired
+
         if (!response.ok) {
 
             localStorage.removeItem("access_token");
@@ -41,15 +46,20 @@ async function refreshAccessToken() {
             return null;
         }
 
+
         const data = await response.json();
 
+
         // Save new access token
+
         localStorage.setItem(
             "access_token",
             data.access
         );
 
+
         return data.access;
+
 
     } catch (error) {
 
@@ -183,12 +193,14 @@ export async function getHotels() {
         `${API_BASE_URL}/hotels/`
     );
 
+
     if (!response.ok) {
 
         throw new Error(
             "Failed to fetch hotels"
         );
     }
+
 
     return response.json();
 }
@@ -204,12 +216,14 @@ export async function getHotel(id) {
         `${API_BASE_URL}/hotels/${id}/`
     );
 
+
     if (!response.ok) {
 
         throw new Error(
             "Failed to fetch hotel"
         );
     }
+
 
     return response.json();
 }
@@ -225,12 +239,14 @@ export async function getFeaturedHotels() {
         `${API_BASE_URL}/hotels/featured/`
     );
 
+
     if (!response.ok) {
 
         throw new Error(
             "Failed to fetch featured hotels"
         );
     }
+
 
     return response.json();
 }
@@ -244,6 +260,7 @@ export async function searchHotels(params) {
 
     const query =
         new URLSearchParams();
+
 
     Object.entries(params).forEach(
         ([key, value]) => {
@@ -630,6 +647,53 @@ export async function changePassword(
 
 
 // =========================================================
+// DELETE ACCOUNT
+//
+// Backend endpoint:
+// DELETE /api/auth/profile/delete/
+//
+// Requires:
+// - current_password
+//
+// Permanently deletes the authenticated user's account.
+// =========================================================
+
+export async function deleteAccount(
+    currentPassword
+) {
+
+    const response =
+        await authenticatedFetch(
+            `${API_BASE_URL}/auth/profile/delete/`,
+            {
+                method: "DELETE",
+
+                body: JSON.stringify({
+                    current_password:
+                        currentPassword,
+                }),
+            }
+        );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw {
+            status: response.status,
+            data: data,
+        };
+    }
+
+
+    return data;
+}
+
+
+// =========================================================
 // BOOKINGS
 // =========================================================
 
@@ -693,4 +757,3 @@ export async function cancelBooking(
 
     return data;
 }
-

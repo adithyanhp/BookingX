@@ -70,7 +70,10 @@ export function AuthProvider({ children }) {
         }
 
 
+        // -----------------------------------------------------
         // Mark user as authenticated
+        // -----------------------------------------------------
+
         if (data?.access && data?.refresh) {
 
             setIsAuthenticated(true);
@@ -80,6 +83,12 @@ export function AuthProvider({ children }) {
 
     // =========================================================
     // LOGOUT
+    // =========================================================
+    //
+    // This is also used after permanent account deletion.
+    //
+    // It removes both JWT tokens and immediately updates
+    // the authentication state.
     // =========================================================
 
     const logout = () => {

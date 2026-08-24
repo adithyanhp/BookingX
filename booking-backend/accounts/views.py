@@ -142,6 +142,93 @@ class ChangePasswordView(APIView):
 
 
 # =========================================================
+# DELETE ACCOUNT
+# =========================================================
+# DELETE -> Permanently delete the authenticated user's
+#           account after verifying the current password.
+#
+# Endpoint:
+# /api/auth/profile/delete/
+#
+# Request body:
+# {
+#     "current_password": "user-password"
+# }
+#
+# IMPORTANT:
+# - Only the authenticated user can delete their own account.
+# - Current password is verified on the backend.
+# - The password is never stored.
+# - The User object is permanently deleted.
+# - Related objects follow their model's on_delete rules.
+# =========================================================
+
+class DeleteAccountView(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+
+        user = request.user
+
+        # -------------------------------------------------
+        # GET CURRENT PASSWORD
+        # -------------------------------------------------
+
+        current_password = request.data.get(
+            "current_password"
+        )
+
+        # -------------------------------------------------
+        # REQUIRE PASSWORD
+        # -------------------------------------------------
+
+        if not current_password:
+
+            return Response(
+                {
+                    "detail": "Current password is required."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # -------------------------------------------------
+        # VERIFY CURRENT PASSWORD
+        # -------------------------------------------------
+
+        if not user.check_password(current_password):
+
+            return Response(
+                {
+                    "detail": "Current password is incorrect."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # -------------------------------------------------
+        # PERMANENT ACCOUNT DELETION
+        # -------------------------------------------------
+        #
+        # Django will apply the on_delete behaviour defined
+        # on related models.
+        #
+        # IMPORTANT:
+        # Do not manually delete bookings here until we
+        # inspect the Booking model's relationship with User.
+        # We want to preserve the correct booking behaviour.
+        #
+
+        user.delete()
+
+        return Response(
+            {
+                "detail": "Your account has been permanently deleted."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+# =========================================================
 # END OF VIEWS
 # =========================================================
 

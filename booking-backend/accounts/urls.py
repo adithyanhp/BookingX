@@ -9,6 +9,7 @@ from .views import (
     RegisterView,
     ProfileView,
     ChangePasswordView,
+    DeleteAccountView,
 )
 
 
@@ -59,6 +60,24 @@ urlpatterns = [
         "profile/password/",
         ChangePasswordView.as_view(),
         name="change-password"
+    ),
+
+
+    # =====================================================
+    # DELETE ACCOUNT
+    # =====================================================
+    # DELETE:
+    # /api/auth/profile/delete/
+    #
+    # Requires:
+    # - Authenticated user
+    # - Current password
+    # =====================================================
+
+    path(
+        "profile/delete/",
+        DeleteAccountView.as_view(),
+        name="delete-account"
     ),
 ]
 

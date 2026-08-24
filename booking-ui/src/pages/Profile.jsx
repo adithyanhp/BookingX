@@ -1,58 +1,230 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserProfile } from "../services/api";
+import {
+    getUserProfile,
+    deleteAccount,
+} from "../services/api";
+import { useAuth } from "../context/AuthContext";
 import "./Profile.css";
 
 function Profile() {
+
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     // =========================================================
+    // DELETE ACCOUNT STATE
+    // =========================================================
+
+    const [showDeleteModal, setShowDeleteModal] =
+        useState(false);
+
+    const [currentPassword, setCurrentPassword] =
+        useState("");
+
+    const [showPassword, setShowPassword] =
+        useState(false);
+
+    const [deleteLoading, setDeleteLoading] =
+        useState(false);
+
+    const [deleteError, setDeleteError] =
+        useState("");
+
+
+    // =========================================================
     // LOAD USER PROFILE
     // =========================================================
 
     useEffect(() => {
+
         const loadProfile = async () => {
+
             try {
+
                 setLoading(true);
                 setError("");
 
-                const data = await getUserProfile();
+                const data =
+                    await getUserProfile();
 
                 setProfile(data);
 
             } catch (error) {
+
                 console.error(
                     "Failed to load profile:",
                     error
                 );
 
                 if (error?.status === 401) {
+
                     setError(
                         "Your login session has expired. Please login again."
                     );
+
                 } else {
+
                     setError(
                         "Unable to load your profile. Please try again."
                     );
                 }
 
             } finally {
+
                 setLoading(false);
             }
         };
 
         loadProfile();
+
     }, []);
+
+
+    // =========================================================
+    // OPEN DELETE MODAL
+    // =========================================================
+
+    const openDeleteModal = () => {
+
+        setCurrentPassword("");
+        setDeleteError("");
+        setShowPassword(false);
+
+        setShowDeleteModal(true);
+    };
+
+
+    // =========================================================
+    // CLOSE DELETE MODAL
+    // =========================================================
+
+    const closeDeleteModal = () => {
+
+        if (deleteLoading) {
+            return;
+        }
+
+        setShowDeleteModal(false);
+        setCurrentPassword("");
+        setDeleteError("");
+        setShowPassword(false);
+    };
+
+
+    // =========================================================
+    // DELETE ACCOUNT
+    // =========================================================
+
+    const handleDeleteAccount = async (event) => {
+
+        event.preventDefault();
+
+        // -----------------------------------------------------
+        // Validate password
+        // -----------------------------------------------------
+
+        if (!currentPassword.trim()) {
+
+            setDeleteError(
+                "Please enter your current password."
+            );
+
+            return;
+        }
+
+        try {
+
+            setDeleteLoading(true);
+            setDeleteError("");
+
+            // -------------------------------------------------
+            // Permanently delete account
+            // -------------------------------------------------
+
+            await deleteAccount(
+                currentPassword
+            );
+
+            // -------------------------------------------------
+            // Clear authentication state
+            //
+            // logout() removes:
+            // access_token
+            // refresh_token
+            //
+            // and also updates AuthContext.
+            // -------------------------------------------------
+
+            logout();
+
+            // -------------------------------------------------
+            // Redirect to login page
+            // -------------------------------------------------
+
+            navigate("/login", {
+                replace: true,
+                state: {
+                    accountDeleted: true,
+                },
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Failed to delete account:",
+                error
+            );
+
+            // -------------------------------------------------
+            // Incorrect current password
+            // -------------------------------------------------
+
+            if (error?.status === 400) {
+
+                setDeleteError(
+                    error?.data?.detail ||
+                    "The password you entered is incorrect."
+                );
+
+            // -------------------------------------------------
+            // Authentication/session problem
+            // -------------------------------------------------
+
+            } else if (error?.status === 401) {
+
+                setDeleteError(
+                    "Your login session has expired. Please login again."
+                );
+
+            // -------------------------------------------------
+            // Other server errors
+            // -------------------------------------------------
+
+            } else {
+
+                setDeleteError(
+                    "Unable to delete your account. Please try again."
+                );
+            }
+
+        } finally {
+
+            setDeleteLoading(false);
+        }
+    };
+
 
     // =========================================================
     // LOADING
     // =========================================================
 
     if (loading) {
+
         return (
             <div className="profile-page">
 
@@ -78,11 +250,13 @@ function Profile() {
         );
     }
 
+
     // =========================================================
     // ERROR
     // =========================================================
 
     if (error) {
+
         return (
             <div className="profile-page">
 
@@ -91,7 +265,9 @@ function Profile() {
                     <div className="profile-error">
 
                         <div className="profile-error-icon">
+
                             <i className="bi bi-person-x"></i>
+
                         </div>
 
                         <h2>
@@ -104,11 +280,15 @@ function Profile() {
 
                         <button
                             className="profile-login-button"
-                            onClick={() => navigate("/login")}
+                            onClick={() =>
+                                navigate("/login")
+                            }
                         >
+
                             <i className="bi bi-box-arrow-in-right"></i>
 
                             Login Again
+
                         </button>
 
                     </div>
@@ -119,6 +299,7 @@ function Profile() {
         );
     }
 
+
     // =========================================================
     // PROFILE IMAGE
     // =========================================================
@@ -126,20 +307,24 @@ function Profile() {
     const profileImage =
         profile?.profile_image || null;
 
+
     // =========================================================
     // DISPLAY NAME
     // =========================================================
 
     const displayName =
-        profile?.first_name || profile?.last_name
+        profile?.first_name ||
+        profile?.last_name
             ? `${profile?.first_name || ""} ${profile?.last_name || ""}`.trim()
             : profile?.username || "User";
+
 
     // =========================================================
     // MAIN PROFILE
     // =========================================================
 
     return (
+
         <div className="profile-page">
 
             <div className="profile-container">
@@ -182,7 +367,6 @@ function Profile() {
                     ================================================= */}
 
                     <div className="profile-card-header">
-
 
                         {/* PROFILE IMAGE */}
 
@@ -233,14 +417,14 @@ function Profile() {
                     <div className="profile-information">
 
 
-                        {/* =================================================
-                            FIRST NAME
-                        ================================================= */}
+                        {/* FIRST NAME */}
 
                         <div className="profile-info-item">
 
                             <div className="profile-info-icon">
+
                                 <i className="bi bi-person"></i>
+
                             </div>
 
                             <div className="profile-info-content">
@@ -259,14 +443,14 @@ function Profile() {
                         </div>
 
 
-                        {/* =================================================
-                            LAST NAME
-                        ================================================= */}
+                        {/* LAST NAME */}
 
                         <div className="profile-info-item">
 
                             <div className="profile-info-icon">
+
                                 <i className="bi bi-person"></i>
+
                             </div>
 
                             <div className="profile-info-content">
@@ -285,14 +469,14 @@ function Profile() {
                         </div>
 
 
-                        {/* =================================================
-                            USERNAME
-                        ================================================= */}
+                        {/* USERNAME */}
 
                         <div className="profile-info-item">
 
                             <div className="profile-info-icon">
+
                                 <i className="bi bi-at"></i>
+
                             </div>
 
                             <div className="profile-info-content">
@@ -311,14 +495,14 @@ function Profile() {
                         </div>
 
 
-                        {/* =================================================
-                            EMAIL
-                        ================================================= */}
+                        {/* EMAIL */}
 
                         <div className="profile-info-item">
 
                             <div className="profile-info-icon">
+
                                 <i className="bi bi-envelope"></i>
+
                             </div>
 
                             <div className="profile-info-content">
@@ -344,7 +528,6 @@ function Profile() {
                     ================================================= */}
 
                     <div className="profile-card-footer">
-
 
                         {/* FOOTER INFORMATION */}
 
@@ -408,11 +591,294 @@ function Profile() {
 
                 </div>
 
+
+                {/* =================================================
+                    DELETE ACCOUNT SECTION
+                ================================================= */}
+
+                <div className="profile-danger-card">
+
+                    <div className="profile-danger-content">
+
+                        <div className="profile-danger-icon">
+
+                            <i className="bi bi-trash3"></i>
+
+                        </div>
+
+                        <div>
+
+                            <h3>
+                                Delete Account
+                            </h3>
+
+                            <p>
+                                Permanently delete your BookingX
+                                account and associated data.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        className="profile-delete-button"
+                        onClick={openDeleteModal}
+                    >
+
+                        <i className="bi bi-trash3"></i>
+
+                        Delete Account
+
+                    </button>
+
+                </div>
+
             </div>
+
+
+            {/* =====================================================
+                DELETE ACCOUNT MODAL
+            ===================================================== */}
+
+            {showDeleteModal && (
+
+                <div
+                    className="profile-delete-modal-overlay"
+                    onMouseDown={(event) => {
+
+                        if (
+                            event.target ===
+                            event.currentTarget
+                        ) {
+                            closeDeleteModal();
+                        }
+
+                    }}
+                >
+
+                    <div
+                        className="profile-delete-modal"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="delete-account-title"
+                    >
+
+
+                        {/* =================================================
+                            MODAL HEADER
+                        ================================================= */}
+
+                        <div className="profile-delete-modal-header">
+
+                            <div className="profile-delete-modal-icon">
+
+                                <i className="bi bi-exclamation-triangle"></i>
+
+                            </div>
+
+                            <button
+                                type="button"
+                                className="profile-delete-modal-close"
+                                onClick={closeDeleteModal}
+                                disabled={deleteLoading}
+                                aria-label="Close"
+                            >
+
+                                <i className="bi bi-x-lg"></i>
+
+                            </button>
+
+                        </div>
+
+
+                        {/* =================================================
+                            MODAL CONTENT
+                        ================================================= */}
+
+                        <div className="profile-delete-modal-content">
+
+                            <h2 id="delete-account-title">
+                                Delete your account?
+                            </h2>
+
+                            <p>
+                                This action is permanent. Your
+                                BookingX account, profile, bookings,
+                                and associated user data will be
+                                permanently deleted.
+                            </p>
+
+
+                            {/* WARNING */}
+
+                            <div className="profile-delete-warning">
+
+                                <i className="bi bi-shield-exclamation"></i>
+
+                                <span>
+                                    This cannot be undone once
+                                    your account is deleted.
+                                </span>
+
+                            </div>
+
+
+                            {/* =================================================
+                                PASSWORD FORM
+                            ================================================= */}
+
+                            <form
+                                onSubmit={handleDeleteAccount}
+                                className="profile-delete-form"
+                            >
+
+                                <label
+                                    htmlFor="delete-account-password"
+                                >
+                                    Current Password
+                                </label>
+
+
+                                <div className="profile-password-wrapper">
+
+                                    <input
+                                        id="delete-account-password"
+                                        type={
+                                            showPassword
+                                                ? "text"
+                                                : "password"
+                                        }
+                                        value={currentPassword}
+                                        onChange={(event) => {
+
+                                            setCurrentPassword(
+                                                event.target.value
+                                            );
+
+                                            if (deleteError) {
+
+                                                setDeleteError("");
+                                            }
+
+                                        }}
+                                        placeholder="Enter your current password"
+                                        autoComplete="current-password"
+                                        disabled={deleteLoading}
+                                    />
+
+
+                                    <button
+                                        type="button"
+                                        className="profile-password-toggle"
+                                        onClick={() =>
+                                            setShowPassword(
+                                                !showPassword
+                                            )
+                                        }
+                                        disabled={deleteLoading}
+                                        aria-label={
+                                            showPassword
+                                                ? "Hide password"
+                                                : "Show password"
+                                        }
+                                    >
+
+                                        <i
+                                            className={
+                                                showPassword
+                                                    ? "bi bi-eye-slash"
+                                                    : "bi bi-eye"
+                                            }
+                                        ></i>
+
+                                    </button>
+
+                                </div>
+
+
+                                {/* =================================================
+                                    DELETE ERROR
+                                ================================================= */}
+
+                                {deleteError && (
+
+                                    <div className="profile-delete-error">
+
+                                        <i className="bi bi-exclamation-circle"></i>
+
+                                        <span>
+                                            {deleteError}
+                                        </span>
+
+                                    </div>
+
+                                )}
+
+
+                                {/* =================================================
+                                    MODAL ACTIONS
+                                ================================================= */}
+
+                                <div className="profile-delete-modal-actions">
+
+                                    <button
+                                        type="button"
+                                        className="profile-delete-cancel-button"
+                                        onClick={closeDeleteModal}
+                                        disabled={deleteLoading}
+                                    >
+                                        Cancel
+                                    </button>
+
+
+                                    <button
+                                        type="submit"
+                                        className="profile-delete-confirm-button"
+                                        disabled={
+                                            deleteLoading ||
+                                            !currentPassword.trim()
+                                        }
+                                    >
+
+                                        {deleteLoading ? (
+
+                                            <>
+                                                <span
+                                                    className="profile-delete-spinner"
+                                                ></span>
+
+                                                Deleting...
+                                            </>
+
+                                        ) : (
+
+                                            <>
+                                                <i className="bi bi-trash3"></i>
+
+                                                Permanently Delete
+                                            </>
+
+                                        )}
+
+                                    </button>
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            )}
 
         </div>
     );
 }
 
 export default Profile;
-

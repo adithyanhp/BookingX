@@ -130,26 +130,6 @@ class Room(models.Model):
     # ROOM IMAGE
     # =====================================================
 
-    # Each room can have its own image.
-    #
-    # Example:
-    #
-    # Grand Horizon
-    #   ├── Standard Room → standard.jpg
-    #   ├── Deluxe Room   → deluxe.jpg
-    #   └── Suite         → suite.jpg
-    #
-    # Taj Malabar
-    #   ├── Standard Room → taj-standard.jpg
-    #   ├── Deluxe Room   → taj-deluxe.jpg
-    #   └── Suite         → taj-suite.jpg
-    #
-    # Images will be stored inside:
-    #
-    # media/rooms/
-    #
-    # =====================================================
-
     image = models.ImageField(
         upload_to="rooms/",
         blank=True,
@@ -211,6 +191,22 @@ class Booking(models.Model):
         ("completed", "Completed"),
     ]
 
+    # =====================================================
+    # BOOKING OWNER
+    # =====================================================
+    #
+    # CASCADE is intentional.
+    #
+    # When a user permanently deletes their account,
+    # their bookings are also permanently deleted.
+    #
+    # This supports the BookingX account-deletion flow
+    # where user-related data is permanently removed.
+    #
+    # The Room itself is NOT deleted because the
+    # Booking.room relationship below uses PROTECT.
+    # =====================================================
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -219,7 +215,9 @@ class Booking(models.Model):
 
     # Booking is made against a specific room.
     # The hotel's identity is obtained through:
+    #
     # booking.room.hotel
+
     room = models.ForeignKey(
         Room,
         on_delete=models.PROTECT,
@@ -351,5 +349,4 @@ class Booking(models.Model):
             ]
             and not self.has_ended
         )
-
     
