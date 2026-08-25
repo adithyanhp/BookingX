@@ -1,73 +1,128 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { loginUser } from "../services/api";
-import { useAuth } from "../context/AuthContext";
-import "./Login.css";
+import { Link } from "react-router-dom";
+import { forgotPassword } from "../services/api";
+import "./ForgotPassword.css";
 
 
-function Login() {
-    const navigate = useNavigate();
-    const location = useLocation();
+function ForgotPassword() {
 
-    const { login } = useAuth();
-
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [showPassword, setShowPassword] = useState(false);
-
+    const [email, setEmail] = useState("");
     const [error, setError] = useState("");
+    const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
-
-    const successMessage =
-        location.state?.successMessage || "";
 
 
     /* =========================================================
-       LOGIN
+       SEND PASSWORD RESET LINK
     ========================================================= */
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
 
         setError("");
+        setSuccess("");
         setLoading(true);
 
         try {
-            const data = await loginUser({
-                username,
-                password,
-            });
+
+            // -------------------------------------------------
+            // VALIDATE EMAIL
+            // -------------------------------------------------
+
+            const trimmedEmail = email.trim();
+
+            if (!trimmedEmail) {
+
+                setError(
+                    "Please enter your email address."
+                );
+
+                return;
+            }
 
 
-            /* =================================================
-               UPDATE CENTRAL AUTHENTICATION STATE
-            ================================================= */
+            // -------------------------------------------------
+            // SEND REQUEST TO DJANGO
+            // -------------------------------------------------
 
-            login(data);
-
-
-            /* =================================================
-               LOGIN SUCCESS
-            ================================================= */
-
-            navigate("/");
-
-        } catch (error) {
-            console.error("Login error:", error);
-
-            setError(
-                error?.data?.detail ||
-                "Invalid username or password."
+            const data = await forgotPassword(
+                trimmedEmail
             );
 
+
+            // -------------------------------------------------
+            // SUCCESS
+            // -------------------------------------------------
+            //
+            // The backend intentionally returns the same
+            // response whether the email exists or not.
+            //
+            // This prevents account/email enumeration.
+            //
+
+            setSuccess(
+                data.detail ||
+                "If an account exists with this email address, a password reset link has been sent."
+            );
+
+
+            // Clear email field after successful request.
+
+            setEmail("");
+
+
+        } catch (error) {
+
+            console.error(
+                "Forgot password error:",
+                error
+            );
+
+
+            // -------------------------------------------------
+            // HANDLE API VALIDATION ERRORS
+            // -------------------------------------------------
+
+            if (
+                error?.data?.email
+            ) {
+
+                setError(
+                    Array.isArray(
+                        error.data.email
+                    )
+                        ? error.data.email[0]
+                        : error.data.email
+                );
+
+            } else if (
+                error?.data?.detail
+            ) {
+
+                setError(
+                    error.data.detail
+                );
+
+            } else {
+
+                setError(
+                    "Unable to send password reset link. Please try again."
+                );
+
+            }
+
         } finally {
+
             setLoading(false);
+
         }
     };
 
 
     return (
         <div className="auth-page">
+
 
             {/* =================================================
                 LEFT SIDE
@@ -79,13 +134,20 @@ function Login() {
 
                 <div className="auth-visual-content">
 
+
+                    {/* =================================================
+                        LOGO
+                    ================================================= */}
+
                     <Link
                         to="/"
                         className="auth-logo"
                     >
 
                         <span className="auth-logo-icon">
+
                             <i className="bi bi-buildings"></i>
+
                         </span>
 
                         <span>
@@ -95,40 +157,56 @@ function Login() {
                     </Link>
 
 
+                    {/* =================================================
+                        VISUAL TEXT
+                    ================================================= */}
+
                     <div className="auth-visual-text">
 
                         <span className="auth-eyebrow">
 
-                            <i className="bi bi-stars"></i>
+                            <i className="bi bi-shield-lock"></i>
 
-                            TRAVEL WITH CONFIDENCE
+                            ACCOUNT SECURITY
 
                         </span>
 
 
                         <h1>
-                            Your next
+
+                            Get back
+
                             <br />
-                            <span>stay</span> starts here.
+
+                            <span>access</span> securely.
+
                         </h1>
 
 
                         <p>
-                            Discover comfortable stays, book with ease,
-                            and manage all your reservations in one place.
+
+                            Don't worry if you've forgotten your password.
+                            We'll help you securely regain access to your
+                            BookingX account.
+
                         </p>
 
                     </div>
 
 
+                    {/* =================================================
+                        TRUST ITEMS
+                    ================================================= */}
+
                     <div className="auth-trust">
+
 
                         <div className="auth-trust-item">
 
                             <i className="bi bi-shield-check"></i>
 
                             <span>
-                                Secure booking
+                                Secure recovery
                             </span>
 
                         </div>
@@ -136,13 +214,14 @@ function Login() {
 
                         <div className="auth-trust-item">
 
-                            <i className="bi bi-clock-history"></i>
+                            <i className="bi bi-envelope-check"></i>
 
                             <span>
-                                Easy management
+                                Email verification
                             </span>
 
                         </div>
+
 
                     </div>
 
@@ -172,7 +251,9 @@ function Login() {
                         >
 
                             <span className="auth-logo-icon">
+
                                 <i className="bi bi-buildings"></i>
+
                             </span>
 
                             <span>
@@ -191,15 +272,25 @@ function Login() {
                     <div className="auth-heading">
 
                         <span className="auth-label">
-                            WELCOME BACK
+
+                            PASSWORD RECOVERY
+
                         </span>
 
+
                         <h2>
-                            Sign in to your account
+
+                            Forgot your password?
+
                         </h2>
 
+
                         <p>
-                            Continue your journey with BookingX.
+
+                            Enter the email address associated with
+                            your account and we'll send you a link
+                            to reset your password.
+
                         </p>
 
                     </div>
@@ -209,14 +300,14 @@ function Login() {
                         SUCCESS MESSAGE
                     ================================================= */}
 
-                    {successMessage && (
+                    {success && (
 
                         <div className="auth-message auth-success">
 
                             <i className="bi bi-check-circle-fill"></i>
 
                             <span>
-                                {successMessage}
+                                {success}
                             </span>
 
                         </div>
@@ -244,7 +335,7 @@ function Login() {
 
 
                     {/* =================================================
-                        LOGIN FORM
+                        FORGOT PASSWORD FORM
                     ================================================= */}
 
                     <form
@@ -254,29 +345,39 @@ function Login() {
 
 
                         {/* =================================================
-                            USERNAME
+                            EMAIL
                         ================================================= */}
 
                         <div className="auth-field">
 
-                            <label htmlFor="username">
-                                Username
+                            <label htmlFor="email">
+
+                                Email Address
+
                             </label>
 
 
                             <div className="auth-input-wrapper">
 
-                                <i className="bi bi-person"></i>
+                                <i className="bi bi-envelope"></i>
+
 
                                 <input
-                                    id="username"
-                                    type="text"
-                                    placeholder="Enter your username"
-                                    value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
-                                    autoComplete="username"
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email address"
+                                    value={email}
+                                    onChange={(e) => {
+
+                                        setEmail(
+                                            e.target.value
+                                        );
+
+                                        setError("");
+                                        setSuccess("");
+
+                                    }}
+                                    autoComplete="email"
                                     required
                                 />
 
@@ -286,86 +387,7 @@ function Login() {
 
 
                         {/* =================================================
-                            PASSWORD
-                        ================================================= */}
-
-                        <div className="auth-field">
-
-                            <label htmlFor="password">
-                                Password
-                            </label>
-
-
-                            <div className="auth-input-wrapper">
-
-                                <i className="bi bi-lock"></i>
-
-
-                                <input
-                                    id="password"
-                                    type={
-                                        showPassword
-                                            ? "text"
-                                            : "password"
-                                    }
-                                    placeholder="Enter your password"
-                                    value={password}
-                                    onChange={(e) =>
-                                        setPassword(e.target.value)
-                                    }
-                                    autoComplete="current-password"
-                                    required
-                                />
-
-
-                                <button
-                                    type="button"
-                                    className="password-toggle"
-                                    onClick={() =>
-                                        setShowPassword(
-                                            !showPassword
-                                        )
-                                    }
-                                    aria-label={
-                                        showPassword
-                                            ? "Hide password"
-                                            : "Show password"
-                                    }
-                                >
-
-                                    <i
-                                        className={
-                                            showPassword
-                                                ? "bi bi-eye-slash"
-                                                : "bi bi-eye"
-                                        }
-                                    ></i>
-
-                                </button>
-
-                            </div>
-
-
-                            {/* =================================================
-                                FORGOT PASSWORD
-                            ================================================= */}
-
-                            <div className="forgot-password-wrapper">
-
-                                <Link
-                                    to="/forgot-password"
-                                    className="forgot-password-link"
-                                >
-                                    Forgot Password?
-                                </Link>
-
-                            </div>
-
-                        </div>
-
-
-                        {/* =================================================
-                            SUBMIT
+                            SUBMIT BUTTON
                         ================================================= */}
 
                         <button
@@ -377,17 +399,21 @@ function Login() {
                             {loading ? (
 
                                 <>
+
                                     <span className="auth-spinner"></span>
 
-                                    Logging in...
+                                    Sending...
+
                                 </>
 
                             ) : (
 
                                 <>
-                                    Sign In
+
+                                    Send Reset Link
 
                                     <i className="bi bi-arrow-right"></i>
+
                                 </>
 
                             )}
@@ -398,18 +424,19 @@ function Login() {
 
 
                     {/* =================================================
-                        REGISTER
+                        BACK TO LOGIN
                     ================================================= */}
 
                     <div className="auth-switch">
 
                         <span>
-                            Don't have an account?
+                            Remember your password?
                         </span>
 
-                        <Link to="/register">
 
-                            Create one
+                        <Link to="/login">
+
+                            Sign in
 
                             <i className="bi bi-arrow-up-right"></i>
 
@@ -441,4 +468,6 @@ function Login() {
     );
 }
 
-export default Login;
+
+export default ForgotPassword;
+

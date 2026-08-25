@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_str
+from django.utils.http import urlsafe_base64_decode
 
 from rest_framework import serializers
 
@@ -9,6 +12,7 @@ from .models import UserProfile
 # =========================================================
 # USER REGISTRATION
 # =========================================================
+
 
 class RegisterSerializer(serializers.ModelSerializer):
 
@@ -55,7 +59,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Normalize email
         # -------------------------------------------------
 
-        data["email"] = data["email"].strip()
+        data["email"] = data["email"].strip().lower()
 
         if not data["email"]:
 
@@ -93,7 +97,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         # -------------------------------------------------
 
         if User.objects.filter(
-            email=data["email"]
+            email__iexact=data["email"]
         ).exists():
 
             raise serializers.ValidationError({
@@ -131,6 +135,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 # =========================================================
 # USER PROFILE
 # =========================================================
+
 
 class UserProfileSerializer(
     serializers.ModelSerializer
@@ -214,7 +219,7 @@ class UserProfileSerializer(
 
     def validate_email(self, value):
 
-        value = value.strip()
+        value = value.strip().lower()
 
         if not value:
 
@@ -225,7 +230,7 @@ class UserProfileSerializer(
         user = self.instance.user
 
         if User.objects.filter(
-            email=value
+            email__iexact=value
         ).exclude(
             id=user.id
         ).exists():
@@ -314,6 +319,7 @@ class UserProfileSerializer(
 # CHANGE PASSWORD
 # =========================================================
 
+
 class ChangePasswordSerializer(
     serializers.Serializer
 ):
@@ -392,6 +398,182 @@ class ChangePasswordSerializer(
 
 
 # =========================================================
-# END OF SERIALIZERS
+# RESET PASSWORD
+# =========================================================
+#
+# POST /api/auth/reset-password/
+#
+# Request body:
+#
+# {
+#     "uid": "...",
+#     "token": "...",
+#     "new_password": "...",
+#     "new_password2": "..."
+# }
+#
+# The UID and token are supplied by ResetPasswordView
+# through serializer context.
+#
+# The serializer:
+#
+# - Decodes the UID
+# - Finds the user
+# - Validates the reset token
+# - Checks the user is active
+# - Checks password confirmation
+# - Prevents password reuse
+# - Applies Django password validation
+#
+# The actual password change is performed by the view.
 # =========================================================
 
+
+class ResetPasswordSerializer(
+    serializers.Serializer
+):
+
+    new_password = serializers.CharField(
+        write_only=True,
+        min_length=8
+    )
+
+    new_password2 = serializers.CharField(
+        write_only=True
+    )
+
+    # =====================================================
+    # VALIDATE RESET PASSWORD DATA
+    # =====================================================
+
+    def validate(self, data):
+
+        # -------------------------------------------------
+        # GET UID AND TOKEN FROM VIEW CONTEXT
+        # -------------------------------------------------
+
+        uid = self.context.get(
+            "uid"
+        )
+
+        token = self.context.get(
+            "token"
+        )
+
+        # -------------------------------------------------
+        # REQUIRE UID AND TOKEN
+        # -------------------------------------------------
+
+        if not uid:
+
+            raise serializers.ValidationError({
+                "uid":
+                    "Invalid or expired password reset link."
+            })
+
+        if not token:
+
+            raise serializers.ValidationError({
+                "token":
+                    "Invalid or expired password reset link."
+            })
+
+        # -------------------------------------------------
+        # DECODE USER ID
+        # -------------------------------------------------
+
+        try:
+
+            user_id = force_str(
+                urlsafe_base64_decode(uid)
+            )
+
+            user = User.objects.get(
+                pk=user_id
+            )
+
+        except (
+            TypeError,
+            ValueError,
+            OverflowError,
+            User.DoesNotExist,
+        ):
+
+            raise serializers.ValidationError({
+                "token":
+                    "Invalid or expired password reset link."
+            })
+
+        # -------------------------------------------------
+        # CHECK USER STATUS
+        # -------------------------------------------------
+
+        if not user.is_active:
+
+            raise serializers.ValidationError({
+                "token":
+                    "Invalid or expired password reset link."
+            })
+
+        # -------------------------------------------------
+        # VALIDATE PASSWORD RESET TOKEN
+        # -------------------------------------------------
+
+        if not default_token_generator.check_token(
+            user,
+            token
+        ):
+
+            raise serializers.ValidationError({
+                "token":
+                    "Invalid or expired password reset link."
+            })
+
+        # -------------------------------------------------
+        # CHECK PASSWORD CONFIRMATION
+        # -------------------------------------------------
+
+        if (
+            data["new_password"]
+            != data["new_password2"]
+        ):
+
+            raise serializers.ValidationError({
+                "new_password":
+                    "New passwords do not match."
+            })
+
+        # -------------------------------------------------
+        # PREVENT SAME PASSWORD
+        # -------------------------------------------------
+
+        if user.check_password(
+            data["new_password"]
+        ):
+
+            raise serializers.ValidationError({
+                "new_password":
+                    "New password must be different from your current password."
+            })
+
+        # -------------------------------------------------
+        # DJANGO PASSWORD VALIDATION
+        # -------------------------------------------------
+
+        validate_password(
+            data["new_password"],
+            user
+        )
+
+        # -------------------------------------------------
+        # STORE USER INTERNALLY
+        # -------------------------------------------------
+
+        data["user"] = user
+
+        return data
+
+
+# =========================================================
+# END OF SERIALIZERS
+# =========================================================

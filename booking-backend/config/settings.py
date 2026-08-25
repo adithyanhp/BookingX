@@ -30,11 +30,17 @@ load_dotenv(BASE_DIR / ".env")
 # SECURITY
 # =========================================================
 
-SECRET_KEY = 'django-insecure-qgg!i5c--*s2+$prb^03b&gr*_h$f8t2w9#9j7%crn4vof&s3b'
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "django-insecure-qgg!i5c--*s2+$prb^03b&gr*_h$f8t2w9#9j7%crn4vof&s3b"
+)
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # =========================================================
@@ -44,22 +50,22 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
 
     # Django
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
     # Third-party
-    'rest_framework',
-    'corsheaders',
+    "rest_framework",
+    "corsheaders",
 
     # Project apps
-    'accounts',
-    'hotels',
-    'reviews',
-    'bookings',
+    "accounts",
+    "hotels",
+    "reviews",
+    "bookings",
 ]
 
 
@@ -121,7 +127,7 @@ MIDDLEWARE = [
 # URL CONFIGURATION
 # =========================================================
 
-ROOT_URLCONF = 'config.urls'
+ROOT_URLCONF = "config.urls"
 
 
 # =========================================================
@@ -131,22 +137,22 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
 
     {
-        'BACKEND':
-            'django.template.backends.django.DjangoTemplates',
+        "BACKEND":
+            "django.template.backends.django.DjangoTemplates",
 
-        'DIRS': [],
+        "DIRS": [],
 
-        'APP_DIRS': True,
+        "APP_DIRS": True,
 
-        'OPTIONS': {
+        "OPTIONS": {
 
-            'context_processors': [
+            "context_processors": [
 
-                'django.template.context_processors.request',
+                "django.template.context_processors.request",
 
-                'django.contrib.auth.context_processors.auth',
+                "django.contrib.auth.context_processors.auth",
 
-                'django.contrib.messages.context_processors.messages',
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
@@ -157,7 +163,7 @@ TEMPLATES = [
 # WSGI
 # =========================================================
 
-WSGI_APPLICATION = 'config.wsgi.application'
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # =========================================================
@@ -196,27 +202,27 @@ DATABASES = {
 AUTH_PASSWORD_VALIDATORS = [
 
     {
-        'NAME':
-            'django.contrib.auth.password_validation.'
-            'UserAttributeSimilarityValidator',
+        "NAME":
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator",
     },
 
     {
-        'NAME':
-            'django.contrib.auth.password_validation.'
-            'MinimumLengthValidator',
+        "NAME":
+            "django.contrib.auth.password_validation."
+            "MinimumLengthValidator",
     },
 
     {
-        'NAME':
-            'django.contrib.auth.password_validation.'
-            'CommonPasswordValidator',
+        "NAME":
+            "django.contrib.auth.password_validation."
+            "CommonPasswordValidator",
     },
 
     {
-        'NAME':
-            'django.contrib.auth.password_validation.'
-            'NumericPasswordValidator',
+        "NAME":
+            "django.contrib.auth.password_validation."
+            "NumericPasswordValidator",
     },
 ]
 
@@ -225,34 +231,14 @@ AUTH_PASSWORD_VALIDATORS = [
 # INTERNATIONALIZATION
 # =========================================================
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
 
 # ---------------------------------------------------------
 # TIMEZONE CONFIGURATION
 # ---------------------------------------------------------
-#
-# IMPORTANT:
-#
-# USE_TZ = True means Django uses timezone-aware datetime
-# objects and stores timestamps in a timezone-safe manner.
-#
-# TIME_ZONE controls the default timezone used by Django
-# when displaying dates/times.
-#
-# Asia/Kolkata is appropriate for the BookingX development
-# and Django Admin environment in India.
-#
-# This does NOT make the database India-specific.
-#
-# Authentication activity timestamps can still represent
-# users from anywhere in the world.
-#
-# Later, the React frontend can convert timestamps to the
-# individual user's browser timezone if required.
-# ---------------------------------------------------------
 
-TIME_ZONE = 'Asia/Kolkata'
+TIME_ZONE = "Asia/Kolkata"
 
 USE_I18N = True
 
@@ -263,7 +249,7 @@ USE_TZ = True
 # STATIC FILES
 # =========================================================
 
-STATIC_URL = 'static/'
+STATIC_URL = "static/"
 
 
 # =========================================================
@@ -276,25 +262,128 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 
 # =========================================================
-# EMAIL
+# EMAIL CONFIGURATION
 # =========================================================
 #
-# Development email backend.
-# Emails are printed in the Django terminal instead of
-# actually being sent.
+# Django 6.1 uses MAILERS for email configuration.
+#
+# BookingX uses email for:
+#
+# - Forgot password
+# - Password reset links
+# - Future account notifications
+#
+# SMTP credentials are stored in .env.
+#
+# Required .env variables:
+#
+# EMAIL_HOST
+# EMAIL_PORT
+# EMAIL_HOST_USER
+# EMAIL_HOST_PASSWORD
+# EMAIL_USE_TLS
+# DEFAULT_FROM_EMAIL
+#
+# FRONTEND_URL
+#
 # =========================================================
 
-EMAIL_BACKEND = (
-    'django.core.mail.backends.console.EmailBackend'
+MAILERS = {
+
+    "default": {
+
+        "BACKEND":
+            "django.core.mail.backends.smtp.EmailBackend",
+
+        "OPTIONS": {
+
+            "host":
+                os.getenv(
+                    "EMAIL_HOST",
+                    "smtp.gmail.com"
+                ),
+
+            "port":
+                int(
+                    os.getenv(
+                        "EMAIL_PORT",
+                        "587"
+                    )
+                ),
+
+            "username":
+                os.getenv(
+                    "EMAIL_HOST_USER"
+                ),
+
+            "password":
+                os.getenv(
+                    "EMAIL_HOST_PASSWORD"
+                ),
+
+            "use_tls":
+                os.getenv(
+                    "EMAIL_USE_TLS",
+                    "True"
+                ).lower() == "true",
+
+            "timeout":
+                10,
+        },
+    },
+}
+
+
+# =========================================================
+# DEFAULT EMAIL SENDER
+# =========================================================
+
+DEFAULT_FROM_EMAIL = os.getenv(
+    "DEFAULT_FROM_EMAIL",
+    "BookingX <noreply@bookingx.com>"
 )
+
+
+# =========================================================
+# FRONTEND URL
+# =========================================================
+#
+# Django uses this when creating password reset links.
+#
+# Example:
+#
+# http://localhost:5173/reset-password/<uid>/<token>
+#
+# =========================================================
+
+FRONTEND_URL = os.getenv(
+    "FRONTEND_URL",
+    "http://localhost:5173"
+).rstrip("/")
 
 
 # =========================================================
 # CORS
 # =========================================================
+#
+# BookingX React frontend runs on Vite.
+#
+# Both localhost and 127.0.0.1 are allowed because browsers
+# treat them as different origins.
+#
+# =========================================================
 
 CORS_ALLOWED_ORIGINS = [
 
     "http://localhost:5173",
+
+    "http://127.0.0.1:5173",
 ]
+
+
+# =========================================================
+# DEFAULT PRIMARY KEY FIELD TYPE
+# =========================================================
+
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 

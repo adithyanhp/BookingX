@@ -11,6 +11,8 @@ from .views import (
     ProfileView,
     ChangePasswordView,
     DeleteAccountView,
+    ForgotPasswordView,
+    ResetPasswordView,
 )
 
 
@@ -82,14 +84,7 @@ urlpatterns = [
     #
     # Requires authentication.
     #
-    # Creates a LOGOUT activity record containing:
-    # - User
-    # - Date/time
-    # - IP address
-    # - Browser/device information
-    #
-    # The frontend is still responsible for removing the
-    # JWT tokens from localStorage.
+    # Creates a LOGOUT activity record.
     #
     # ---------------------------------------------------------
 
@@ -101,8 +96,80 @@ urlpatterns = [
 
 
     # =========================================================
+    # PASSWORD RESET
+    # =========================================================
+
+
+    # ---------------------------------------------------------
+    # FORGOT PASSWORD
+    # ---------------------------------------------------------
+    #
+    # POST /api/auth/forgot-password/
+    #
+    # Request body:
+    #
+    # {
+    #     "email": "user@example.com"
+    # }
+    #
+    # Generates a secure password-reset token and sends
+    # a password-reset email.
+    #
+    # The API intentionally does not reveal whether the
+    # supplied email exists.
+    #
+    # ---------------------------------------------------------
+
+    path(
+        "forgot-password/",
+        ForgotPasswordView.as_view(),
+        name="forgot-password",
+    ),
+
+
+    # ---------------------------------------------------------
+    # RESET PASSWORD
+    # ---------------------------------------------------------
+    #
+    # POST /api/auth/reset-password/
+    #
+    # Request body:
+    #
+    # {
+    #     "uid": "...",
+    #     "token": "...",
+    #     "new_password": "...",
+    #     "new_password2": "..."
+    # }
+    #
+    # The UID and token are received from the frontend.
+    #
+    # The frontend gets them from:
+    #
+    # /reset-password/<uid>/<token>
+    #
+    # This endpoint:
+    #
+    # - Validates the UID
+    # - Validates the reset token
+    # - Validates the new password
+    # - Changes the user's password
+    # - Invalidates the reset token after the password changes
+    # - Creates a password-change audit record
+    #
+    # ---------------------------------------------------------
+
+    path(
+        "reset-password/",
+        ResetPasswordView.as_view(),
+        name="reset-password",
+    ),
+
+
+    # =========================================================
     # USER PROFILE
     # =========================================================
+
 
     # ---------------------------------------------------------
     # GET /api/auth/profile/
@@ -128,6 +195,7 @@ urlpatterns = [
     # CHANGE PASSWORD
     # =========================================================
 
+
     # ---------------------------------------------------------
     # PATCH /api/auth/profile/password/
     #
@@ -149,6 +217,7 @@ urlpatterns = [
     # DELETE ACCOUNT
     # =========================================================
 
+
     # ---------------------------------------------------------
     # DELETE /api/auth/profile/delete/
     #
@@ -157,12 +226,6 @@ urlpatterns = [
     # - Current password
     #
     # Permanently deletes the authenticated user's account.
-    #
-    # Related data is handled according to the model
-    # relationship configuration.
-    #
-    # UserActivity records can remain because the
-    # UserActivity.user relationship uses SET_NULL.
     #
     # ---------------------------------------------------------
 

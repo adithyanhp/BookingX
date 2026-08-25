@@ -34,6 +34,7 @@ class PasswordChangeLog(models.Model):
     CHANGE_TYPE_CHOICES = [
         ("USER", "User"),
         ("ADMIN", "Admin"),
+        ("RESET", "Password Reset"),
     ]
 
     # -----------------------------------------------------
@@ -60,8 +61,18 @@ class PasswordChangeLog(models.Model):
     # -----------------------------------------------------
     # User/admin who performed the password change
     #
-    # SET_NULL allows the audit record to remain even if
-    # the account that performed the action is deleted.
+    # USER:
+    #     changed_by = user
+    #
+    # ADMIN:
+    #     changed_by = admin
+    #
+    # RESET:
+    #     changed_by = NULL
+    #
+    # Password resets are performed through the secure
+    # password-reset token flow rather than by an
+    # authenticated user/admin.
     # -----------------------------------------------------
 
     changed_by = models.ForeignKey(
@@ -199,5 +210,4 @@ class UserActivity(models.Model):
             f"{self.get_action_display()} - "
             f"{self.timestamp:%Y-%m-%d %H:%M:%S}"
         )
-
     

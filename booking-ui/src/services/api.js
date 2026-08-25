@@ -192,6 +192,7 @@ export async function authenticatedFetch(
 // HOTELS
 // =========================================================
 
+
 // ---------------------------------------------------------
 // GET ALL HOTELS
 // ---------------------------------------------------------
@@ -314,6 +315,7 @@ export async function searchHotels(params) {
 // =========================================================
 // ROOMS
 // =========================================================
+
 
 // ---------------------------------------------------------
 // GET ROOMS BY HOTEL
@@ -445,6 +447,58 @@ export async function loginUser(
             body: JSON.stringify(
                 credentials
             ),
+        }
+    );
+
+
+    const data =
+        await response.json();
+
+
+    if (!response.ok) {
+
+        throw {
+            status: response.status,
+            data: data,
+        };
+    }
+
+
+    return data;
+}
+
+
+// ---------------------------------------------------------
+// FORGOT PASSWORD
+//
+// Backend endpoint:
+// POST /api/auth/forgot-password/
+//
+// Request body:
+// {
+//     "email": "user@example.com"
+// }
+//
+// This endpoint does NOT require authentication.
+// ---------------------------------------------------------
+
+export async function forgotPassword(
+    email
+) {
+
+    const response = await fetch(
+        `${API_BASE_URL}/auth/forgot-password/`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json",
+            },
+
+            body: JSON.stringify({
+                email: email,
+            }),
         }
     );
 
